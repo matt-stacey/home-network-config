@@ -1,0 +1,4 @@
+# Virtual Environment
+salt_python3/
+__pycache__/
+*.pyc
