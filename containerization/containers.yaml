@@ -1,0 +1,82 @@
+droppy:
+    git_url: https://github.com/droppyjs/droppy
+samba:
+    git_url: https://git.samba.org/samba.git/
+gitea:
+    git_url: https://github.com/go-gitea/gitea
+snapshot:
+    git_url: false
+it tools:
+    git_url: false
+nginx:
+    git_url: https://github.com/NginxProxyManager/nginx-proxy-manager
+grafana:  # Network monitor
+    git_url: false
+nextcloud:
+    git_url: https://github.com/nextcloud/server
+    photos: https://github.com/pulsejet/memories
+emby:
+    git_url: https://github.com/MediaBrowser/Emby
+airsonic-advanced:  # media streamer
+    git_url: https://github.com/airsonic-advanced/airsonic-advanced
+dashy:
+    git_url: https://github.com/lissy93/dashy
+heimdall:
+    git_url: https://github.com/linuxserver/Heimdall
+home assistant:
+    git_url: false
+meshtastic:
+    git_url: https://meshtastic.org/docs/software/python/cli/installation
+adguard:
+    git_url: https://github.com/AdguardTeam/AdGuardHome
+paperless:  # doc repo
+    git_url: https://github.com/paperless-ngx/paperless-ngx
+wallabag:  # read-it-later
+    git_url: https://github.com/wallabag/wallabag
+radarr:
+    git_url: https://github.com/Radarr/Radarr
+lidarr:
+    git_url: https://github.com/Lidarr/Lidarr
+sonarr:
+    git_url: https://github.com/Sonarr/Sonarr
+overseerr:
+    git_url: https://github.com/sct/overseerr
+tube archivist:
+    git_url: https://github.com/tubearchivist/tubearchivist
+metube:
+    git_url: https://github.com/alexta69/metube
+dcs server:
+    git_url: false
+space engineers server:
+    git_url: false
+minecraft server:
+    git_url: false
+mindustry server:
+    git_url: false
+
+# Anything else on
+# https://github.com/awesome-selfhosted/awesome-selfhosted
+pi-hole:
+    git_url: https://github.com/pi-hole/pi-hole
+mayan edms:
+    git_url: https://gitlab.com/mayan-edms/mayan-edms
+calibre:
+    git_url: https://github.com/janeczku/calibre-web
+    other: https://launchpad.net/calibre
+audiobookshelf:
+    git_url: https://github.com/advplyr/audiobookshelf
+open meteo:
+    git_url: https://github.com/open-meteo/open-meteo
+open ziti https://github.com/openziti/ziti
+budget tool:
+    git_url: false
+groceri.es:
+    git_url: https://github.com/juriansluiman/groceri.es
+farmos:
+    git_url: https://github.com/farmOS/farmOS
+tania:  # farm tool
+    git_url: https://github.com/usetania/tania-core
+open project:
+    git_url: https://github.com/opf/openproject
+
+

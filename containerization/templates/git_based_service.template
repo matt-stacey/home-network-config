@@ -1,0 +1,11 @@
+container-service:
+    git.latest:
+        - name: {{ service_git_url }}
+#        - rev: HEAD
+        - target: /root/Git/{{ service_name }}
+        # identity must be mounted properly in /var/lib/lxc/<container>/config with:
+        # lxc.mount.entry = /root/.ssh srv/.ssh none bind 0 0
+        - identity: /srv/.ssh/id_rsa
+        - require:
+            - pkg: git
+            - ssh_known_hosts: github.com

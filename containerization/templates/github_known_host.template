@@ -1,0 +1,8 @@
+github.com:
+  ssh_known_hosts:
+    - present
+    - user: root
+#    - enc: ecdsa  # FIXME
+#    - fingerprint: 4e:94:b0:54:c1:5b:29:a2:70:0e:e1:a3:51:ee:ee:e3  # FIXME
+    - enc: ed25519
+    - fingerprint: +DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU
