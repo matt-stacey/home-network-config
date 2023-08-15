@@ -7,12 +7,12 @@ from jinja2 import Environment, FileSystemLoader
 
 class Paths:
     sls_template_dir: str = 'templates/'  # trailing slash for Jinja2
-    sls_template_suffix: str = 'template'
+    sls_template_suffix: str = '.template'
 
 
 class ContainerCreator:
     def __init__(self, roster_file: str, sls_template_dir: str):
-        self.container_roster: Path = Path(args.yaml)
+        self.container_roster: Path = Path(roster_file)
         self.load_roster()
 
         self.sls_template_dir: str  = sls_template_dir
