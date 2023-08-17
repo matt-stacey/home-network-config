@@ -1,8 +1,5 @@
-import glob
-import yaml
 import argparse
 from pathlib import Path
-from jinja2 import Environment, FileSystemLoader
 
 
 from paths import Paths
@@ -24,10 +21,12 @@ def main():
     parser = make_parser()
     args = parser.parse_args()
 
-    creator = ContainerCreator()
-    configurer = ContainerConfigurer(args.yaml, Paths.sls_template_dir)
+    creator = ContainerCreator(Path(args.yaml))
+    configurer = ContainerConfigurer(Paths.sls_template_dir)
 
-    print(configurer.containers)
+    print(creator.current_containers)
+    print(creator.desired_containers.keys())
+
     print(configurer.sls_templates.keys())
 
 

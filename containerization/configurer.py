@@ -8,16 +8,9 @@ from paths import Paths
 
 
 class ContainerConfigurer:
-    def __init__(self, roster_file: str, sls_template_dir: str):
-        self.container_roster: Path = Path(roster_file)
-        self.load_roster()
-
+    def __init__(self, sls_template_dir: str):
         self.sls_template_dir: str  = sls_template_dir
         self.load_sls_templates()
-
-    def load_roster(self):
-        with self.container_roster.open('r') as f:
-            self.containers = yaml.safe_load(f.read())
 
     def load_sls_templates(self):
         self.sls_template_env = Environment(loader=FileSystemLoader(self.sls_template_dir))
