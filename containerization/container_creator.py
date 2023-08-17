@@ -11,6 +11,10 @@ class Paths:
 
 
 class ContainerCreator:
+    pass
+
+
+class ContainerConfigurer:
     def __init__(self, roster_file: str, sls_template_dir: str):
         self.container_roster: Path = Path(roster_file)
         self.load_roster()
@@ -47,10 +51,10 @@ def main():
     parser = make_parser()
     args = parser.parse_args()
 
-    container_creator = ContainerCreator(args.yaml, Paths.sls_template_dir)
+    configurer = ContainerConfigurer(args.yaml, Paths.sls_template_dir)
 
-    print(container_creator.containers)
-    print(container_creator.sls_templates.keys())
+    print(configurer.containers)
+    print(configurer.sls_templates.keys())
 
 
 if __name__ == '__main__':
