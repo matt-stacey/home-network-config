@@ -1,3 +1,5 @@
+oldwd=`pwd`
+
 # Parse arguments
 overwrite_venv=
 while (( $# )); do
@@ -36,3 +38,5 @@ else
     source ${PROJECT_ROOT}/${proj_name}_python3/bin/activate
 fi
 
+# Return command line to proper location
+cd $oldwd

@@ -2,3 +2,7 @@
 salt_python3/
 __pycache__/
 *.pyc
+
+# Editor files
+*.swp
+
