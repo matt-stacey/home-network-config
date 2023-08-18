@@ -2,7 +2,7 @@ import argparse
 from pathlib import Path
 
 
-from paths import Paths
+from paths import Paths, Defaults
 from creator import ContainerCreator
 from configurer import ContainerConfigurer
 
@@ -26,6 +26,9 @@ def main():
 
     print(creator.current_containers)
     print(creator.desired_containers.keys())
+
+    created = creator.create_from(Defaults.source_container)
+    print(f'Created containers: {created}')
 
     print(configurer.sls_templates.keys())
 
