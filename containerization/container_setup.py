@@ -1,8 +1,7 @@
 import argparse
 from pathlib import Path
 
-
-from paths import Paths, Defaults
+from data import Paths, Defaults
 from creator import ContainerCreator
 from configurer import ContainerConfigurer
 

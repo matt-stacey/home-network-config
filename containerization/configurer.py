@@ -4,7 +4,7 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
 
-from paths import Paths
+from data import Paths
 
 
 class ContainerConfigurer:
