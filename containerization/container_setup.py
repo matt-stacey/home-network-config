@@ -7,7 +7,7 @@ from creator import ContainerCreator
 from configurer import ContainerConfigurer
 
 
-logger = logging.getLogger()
+logger = logging.getLogger('main')
 logger.setLevel(logging.INFO)
 FORMAT = '%(asctime)s: %(name)s: %(levelname)s: %(message)s'
 logging.basicConfig(format=FORMAT)
@@ -34,9 +34,9 @@ def main():
     print(creator.desired_containers.keys())
 
     created = creator.copy_from(Defaults.source_container)
-    print(f'Created containers: {created}')
+    logger.info(f'Created containers: {created}')
 
-    print(configurer.sls_templates.keys())
+    logger.info(configurer.sls_templates.keys())
 
 
 if __name__ == '__main__':

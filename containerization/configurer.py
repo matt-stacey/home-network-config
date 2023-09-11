@@ -14,6 +14,7 @@ class ContainerConfigurer:
 
         self.logger = logging.getLogger('configurer')
         self.logger.setLevel(logging.INFO)
+        self.logger.propagate = False
         self.formatter = logging.Formatter('%(asctime)s: %(name)s: %(levelname)s: %(message)s')  # type: ignore
         self.stream_handler = logging.StreamHandler()  # type: ignore
         self.stream_handler.setFormatter(self.formatter)

@@ -11,6 +11,7 @@ class ContainerCreator:
 
         self.logger = logging.getLogger('creator')
         self.logger.setLevel(logging.INFO)
+        self.logger.propagate = False
         self.formatter = logging.Formatter('%(asctime)s: %(name)s: %(levelname)s: %(message)s')  # type: ignore
         self.stream_handler = logging.StreamHandler()  # type: ignore
         self.stream_handler.setFormatter(self.formatter)
@@ -32,17 +33,17 @@ class ContainerCreator:
 
         for new_container in self.desired_containers.keys():
             if new_container in containers_before_copy:
-                print(f'{new_container} already exists; skipping!')
+                self.logger.warning(f'{new_container} already exists; skipping!')
                 continue
 
             t_start: float = perf_counter()
-            print(f'Copying {source_container} to {new_container}')
+            self.logger.info(f'Copying {source_container} to {new_container}')
             result = os.popen(copy_cmd.format(source_container=source_container,
                                               new_container=new_container))
             if len(result.read()) == 0:  # FIXME very weak, but dunno what failing looks like yet
                 created_containers.append(new_container)
             t_stop: float = perf_counter()
-            print(f'    Copied {new_container} in {t_stop-t_start} seconds')
+            self.logger.info(f'Copied {new_container} in {t_stop-t_start} seconds')
 
         return sorted(created_containers)
 
