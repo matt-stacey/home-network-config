@@ -1,5 +1,6 @@
 import os
 import yaml
+import logging
 from time import perf_counter
 from pathlib import Path
 
@@ -7,6 +8,14 @@ from pathlib import Path
 class ContainerCreator:
     def __init__(self, roster_path: Path):
         self.container_roster: Path = roster_path
+
+        self.logger = logging.getLogger('creator')
+        self.logger.setLevel(logging.INFO)
+        self.formatter = logging.Formatter('%(asctime)s: %(name)s: %(levelname)s: %(message)s')  # type: ignore
+        self.stream_handler = logging.StreamHandler()  # type: ignore
+        self.stream_handler.setFormatter(self.formatter)
+        self.logger.addHandler(self.stream_handler)
+
         self.load_roster()
 
     def load_roster(self):

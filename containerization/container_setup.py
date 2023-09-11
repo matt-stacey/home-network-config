@@ -1,9 +1,16 @@
+import logging
 import argparse
 from pathlib import Path
 
 from data import Paths, Defaults
 from creator import ContainerCreator
 from configurer import ContainerConfigurer
+
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+FORMAT = '%(asctime)s: %(name)s: %(levelname)s: %(message)s'
+logging.basicConfig(format=FORMAT)
 
 
 def make_parser():
