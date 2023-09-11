@@ -33,7 +33,7 @@ def main():
     print(creator.current_containers)
     print(creator.desired_containers.keys())
 
-    created = creator.create_from(Defaults.source_container)
+    created = creator.copy_from(Defaults.source_container)
     print(f'Created containers: {created}')
 
     print(configurer.sls_templates.keys())

@@ -67,7 +67,8 @@ audiobookshelf:
     git_url: https://github.com/advplyr/audiobookshelf
 open meteo:
     git_url: https://github.com/open-meteo/open-meteo
-open ziti https://github.com/openziti/ziti
+open ziti:
+    git_url: https://github.com/openziti/ziti
 budget tool:
     git_url: false
 groceri.es:

@@ -22,7 +22,7 @@ class ContainerCreator:
         with self.container_roster.open('r') as f:
             self.desired_containers = yaml.safe_load(f.read())
 
-    def create_from(self, source_container: str) -> list[str]:
+    def copy_from(self, source_container: str) -> list[str]:
         if source_container not in self.current_containers:
             raise RuntimeError(f'Source container {source_container} does not exist!')
 
