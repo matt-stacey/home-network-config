@@ -3,6 +3,7 @@ import argparse
 from pathlib import Path
 
 from data import Paths, Defaults
+from yaml_handler import YamlFile
 from creator import ContainerCreator
 from configurer import ContainerConfigurer
 
@@ -27,8 +28,9 @@ def main():
     parser = make_parser()
     args = parser.parse_args()
 
-    creator = ContainerCreator(Path(args.yaml))
-    configurer = ContainerConfigurer(Paths.sls_template_dir)
+    container_roster = YamlFile(Path(args.yaml))
+    creator = ContainerCreator(container_roster)
+    configurer = ContainerConfigurer(container_roster, Paths.sls_template_dir)
 
     logger.info(creator.current_containers)
     logger.info(creator.desired_containers.keys())

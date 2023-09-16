@@ -4,18 +4,15 @@ from time import perf_counter
 from pathlib import Path
 
 from logger import Logger
+from yaml_handler import YamlFile
 
 
 class ContainerCreator(Logger):
-    def __init__(self, roster_path: Path):
+    def __init__(self, container_roster: YamlFile):
         super().__init__('creator')
 
-        self.container_roster: Path = roster_path
-        self.load_roster()
-
-    def load_roster(self):
-        with self.container_roster.open('r') as f:
-            self.desired_containers = yaml.safe_load(f.read())
+        self.container_roster: YamlFile = container_roster
+        self.desired_containers = self.container_roster.data
 
     def copy_from(self, source_container: str) -> list[str]:
         if source_container not in self.current_containers:

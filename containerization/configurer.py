@@ -5,11 +5,15 @@ from jinja2 import Environment, FileSystemLoader
 
 from data import Paths
 from logger import Logger
+from yaml_handler import YamlFile
 
 
 class ContainerConfigurer(Logger):
-    def __init__(self, sls_template_dir: str):
+    def __init__(self, container_roster: YamlFile, sls_template_dir: str):
         super().__init__('configurer')
+
+        self.container_roster: YamlFile = container_roster
+        self.desired_containers = self.container_roster.data
 
         self.sls_template_dir: str  = sls_template_dir
         self.load_sls_templates()
