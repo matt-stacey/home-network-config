@@ -30,8 +30,8 @@ def main():
     creator = ContainerCreator(Path(args.yaml))
     configurer = ContainerConfigurer(Paths.sls_template_dir)
 
-    print(creator.current_containers)
-    print(creator.desired_containers.keys())
+    logger.info(creator.current_containers)
+    logger.info(creator.desired_containers.keys())
 
     created = creator.copy_from(Defaults.source_container)
     logger.info(f'Created containers: {created}')
