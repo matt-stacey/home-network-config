@@ -98,24 +98,24 @@ if __name__ == '__main__':
     parser = make_parser()
     args = parser.parse_args()
 
-    containter_master = ContainerMaster(Path(args.yaml), Paths.sls_template_dir)
+    container_master = ContainerMaster(Path(args.yaml), Paths.sls_template_dir)
 
-    containter_master.logger.info(containter_master.current_containers)
+    container_master.logger.info(container_master.current_containers)
 
     if args.copy:
-        containter_master.logger.info(f'Copying containers from {args.source_container}')
-        containter_master.logger.info(containter_master.desired_containers.keys())
+        container_master.logger.info(f'Copying containers from {args.source_container}')
+        container_master.logger.info(container_master.desired_containers.keys())
 
         created = []  # FIXME remove
         try:  # FIXME remove
-            created = containter_master.copy_from(Defaults.source_container)
+            created = container_master.copy_from(Defaults.source_container)
         except RuntimeError as err:  # FIXME remove
-            containter_master.logger.warning(err)  # FIXME remove
-        containter_master.logger.info(f'Created containers: {created}')
+            container_master.logger.warning(err)  # FIXME remove
+        container_master.logger.info(f'Created containers: {created}')
 
     if args.configure:
-        containter_master.logger.info('Configuring containers')
-        containter_master.logger.info(containter_master.sls_templates.keys())
+        container_master.logger.info('Configuring containers')
+        container_master.logger.info(container_master.sls_templates.keys())
 
     # TODO turn them on (parser arg?)
 
