@@ -10,4 +10,5 @@ class YamlFile:
 
     @property
     def data(self):
+        # TODO jit
         return self._data

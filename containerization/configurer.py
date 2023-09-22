@@ -28,3 +28,12 @@ class ContainerConfigurer(Logger):
             if file_path.suffix == Paths.sls_template_suffix:
                 self.sls_templates[file_path.stem] = self.sls_template_env.get_template(file_path.name)
 
+    # TODO function to 'mount' drives
+    # from yaml data
+    # .ssh
+
+    # TODO function to create Git folder
+
+    # TODO function to place (completed) templates
+
+    # TODO configure as salt minion

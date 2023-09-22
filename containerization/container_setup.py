@@ -6,6 +6,7 @@ from data import Paths, Defaults
 from yaml_handler import YamlFile
 from creator import ContainerCreator
 from configurer import ContainerConfigurer
+# TODO combine into ContainerMaster, place here; pull in yaml handling/logging
 
 
 logger = logging.getLogger('main')
@@ -35,11 +36,18 @@ def main():
     logger.info(creator.current_containers)
     logger.info(creator.desired_containers.keys())
 
+    # TODO add arg to put in source container
+    # TODO create MESG to copy in args
     created = creator.copy_from(Defaults.source_container)
     logger.info(f'Created containers: {created}')
 
     logger.info(configurer.sls_templates.keys())
+    # TODO configure MESG in args
+
+    # TODO turn them on (parser arg?)
+    
+    # TODO? output commands to attach
 
 
 if __name__ == '__main__':
-    main()
+    main()  # TODO instance to run

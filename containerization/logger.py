@@ -12,3 +12,5 @@ class Logger:
         self.stream_handler = logging.StreamHandler()  # type: ignore
         self.stream_handler.setFormatter(self.formatter)
         self.logger.addHandler(self.stream_handler)
+
+        # TODO log to file
