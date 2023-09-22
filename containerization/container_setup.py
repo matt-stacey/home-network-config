@@ -6,6 +6,8 @@ from time import perf_counter
 from typing import List
 from pathlib import Path
 
+from jinja2 import Environment, FileSystemLoader
+
 from data import Paths, Defaults
 from logger import Logger
 from yaml_handler import YamlFile
@@ -33,8 +35,12 @@ def make_parser():
 class ContainerMaster(Logger):
     def __init__(self, yaml_path: Path, sls_template_dir: str):
         super().__init__('container_master')
+
         self.container_roster: YamlFile = YamlFile(yaml_path)
         self.desired_containers = self.container_roster.data
+
+        self.sls_template_dir: str  = sls_template_dir
+        self.load_sls_templates()
 
     def copy_from(self, source_container: str) -> List[str]:
         if source_container not in self.current_containers:
@@ -60,6 +66,26 @@ class ContainerMaster(Logger):
 
         return sorted(created_containers)
 
+    def load_sls_templates(self):
+        self.sls_template_env = Environment(loader=FileSystemLoader(self.sls_template_dir))
+        self.sls_templates_path: Path = Paths.containerization / self.sls_template_dir
+
+        self.sls_templates = {}  # type: ignore
+
+        for file_path in self.sls_templates_path.glob('*'):
+            if file_path.suffix == Paths.sls_template_suffix:
+                self.sls_templates[file_path.stem] = self.sls_template_env.get_template(file_path.name)
+
+    # TODO function to 'mount' drives
+    # from yaml data
+    # .ssh
+
+    # TODO function to create Git folder
+
+    # TODO function to place (completed) templates
+
+    # TODO configure as salt minion
+
     @property
     def current_containers(self) -> List[str]:
         lxc_cmd: str = 'lxc-ls -f'
@@ -78,9 +104,6 @@ if __name__ == '__main__':
     containter_master.logger.info(containter_master.current_containers)
     containter_master.logger.info(containter_master.desired_containers.keys())
 
-    container_roster = YamlFile(Path(args.yaml))
-    configurer = ContainerConfigurer(container_roster, Paths.sls_template_dir)
-
     # TODO add arg to put in source container
     # TODO create MESG to copy in args
     created = []
@@ -90,7 +113,7 @@ if __name__ == '__main__':
         containter_master.logger.warning(err)
     containter_master.logger.info(f'Created containers: {created}')
 
-    containter_master.logger.info(configurer.sls_templates.keys())
+    containter_master.logger.info(containter_master.sls_templates.keys())
     # TODO configure MESG in args
 
     # TODO turn them on (parser arg?)
