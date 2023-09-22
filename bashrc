@@ -26,8 +26,8 @@ venv_path=${PROJECT_ROOT}/${proj_name}_python3
 
 # Create virtual environment
 if [ $overwrite_venv ]; then
-    rm -rf $venv_path
     deactivate
+    rm -rf $venv_path
 fi
 
 if [ ! -d ${venv_path} ]; then
