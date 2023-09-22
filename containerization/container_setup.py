@@ -12,16 +12,6 @@ from logger import Logger
 from yaml_handler import YamlFile
 
 
-def make_parser():
-    parser = argparse.ArgumentParser(description='Container Creator/Configurer')
-
-    parser.add_argument('-Y', '--yaml',
-                        required=True,
-                        help='YAML with container data')
-
-    return parser
-
-
 class ContainerMaster(Logger):
     def __init__(self, yaml_path: Path, sls_template_dir: str):
         super().__init__('container_master')
@@ -85,6 +75,25 @@ class ContainerMaster(Logger):
         return containers
 
 
+def make_parser():
+    parser = argparse.ArgumentParser(description='Container Creator/Configurer')
+
+    mode_group = parser.add_mutually_exclusive_group()
+    mode_group.add_argument('--copy', action='store_true', dest='copy', default=False)
+    mode_group.add_argument('--configure', action='store_true', dest='configure', default=False)
+
+    parser.add_argument('-C', '--source-container',
+                             required=False,
+                             default=Defaults.source_container,
+                             help=f'Container from which to copy (default: {Defaults.source_container})')
+
+    parser.add_argument('-Y', '--yaml',
+                        required=True,
+                        help='YAML with container data')
+
+    return parser
+
+
 if __name__ == '__main__':
     parser = make_parser()
     args = parser.parse_args()
@@ -92,19 +101,21 @@ if __name__ == '__main__':
     containter_master = ContainerMaster(Path(args.yaml), Paths.sls_template_dir)
 
     containter_master.logger.info(containter_master.current_containers)
-    containter_master.logger.info(containter_master.desired_containers.keys())
 
-    # TODO add arg to put in source container
-    # TODO create MESG to copy in args
-    created = []
-    try:
-        created = containter_master.copy_from(Defaults.source_container)
-    except RuntimeError as err:
-        containter_master.logger.warning(err)
-    containter_master.logger.info(f'Created containers: {created}')
+    if args.copy:
+        containter_master.logger.info(f'Copying containers from {args.source_container}')
+        containter_master.logger.info(containter_master.desired_containers.keys())
 
-    containter_master.logger.info(containter_master.sls_templates.keys())
-    # TODO configure MESG in args
+        created = []  # FIXME remove
+        try:  # FIXME remove
+            created = containter_master.copy_from(Defaults.source_container)
+        except RuntimeError as err:  # FIXME remove
+            containter_master.logger.warning(err)  # FIXME remove
+        containter_master.logger.info(f'Created containers: {created}')
+
+    if args.configure:
+        containter_master.logger.info('Configuring containers')
+        containter_master.logger.info(containter_master.sls_templates.keys())
 
     # TODO turn them on (parser arg?)
 
