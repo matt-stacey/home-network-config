@@ -57,8 +57,8 @@ class ContainerMaster(Logger):
         return sorted(created_containers)
 
     def load_sls_templates(self):
-        self.sls_template_env = Environment(loader=FileSystemLoader(self.sls_template_dir))
         self.sls_templates_path: Path = Paths.containerization / self.sls_template_dir
+        self.sls_template_env = Environment(loader=FileSystemLoader(self.sls_templates_path))
 
         self.sls_templates = {}  # type: ignore
 
