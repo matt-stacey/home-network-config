@@ -1,5 +1,4 @@
 import os
-import logging
 import argparse
 
 from time import perf_counter
@@ -11,15 +10,6 @@ from jinja2 import Environment, FileSystemLoader
 from data import Paths, Defaults
 from logger import Logger
 from yaml_handler import YamlFile
-from configurer import ContainerConfigurer
-# TODO combine into ContainerMaster, place here; pull in yaml handling/logging
-
-
-# TODO remove logging here, use master
-logger = logging.getLogger('main')
-logger.setLevel(logging.INFO)
-FORMAT = '%(asctime)s: %(name)s: %(levelname)s: %(message)s'
-logging.basicConfig(format=FORMAT)
 
 
 def make_parser():
