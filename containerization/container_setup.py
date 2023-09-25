@@ -64,7 +64,16 @@ class ContainerMaster(Logger):
 
     # TODO function to place (completed) templates
 
-    # TODO configure as salt minion
+    def minionize(self):
+        # TODO configure as salt minion
+        # create pillar/salt data
+        pass
+
+    def activate_containers(self):  # TODO
+        pass
+
+    def deactivate_containers(self):  # TODO
+        pass
 
     @property
     def current_containers(self) -> List[str]:
@@ -81,6 +90,7 @@ def make_parser():
     mode_group = parser.add_mutually_exclusive_group()
     mode_group.add_argument('--copy', action='store_true', dest='copy', default=False)
     mode_group.add_argument('--configure', action='store_true', dest='configure', default=False)
+    mode_group.add_argument('--activate', action='store_true', dest='activate', default=False)
 
     parser.add_argument('-C', '--source-container',
                              required=False,
@@ -117,6 +127,10 @@ if __name__ == '__main__':
         container_master.logger.info('Configuring containers')
         container_master.logger.info(container_master.sls_templates.keys())
 
-    # TODO turn them on (parser arg?)
-
-    # TODO? output commands to attach
+    if args.activate:
+        container_master.logger.info('Activating containers')
+        container_master.activate_containers()
+        # TODO? output commands to attach
+    elif args.deactivate:
+        container_master.logger.info('Dectivating containers')
+        container_master.deactivate_containers()
