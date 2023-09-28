@@ -20,11 +20,10 @@ class ContainerMaster(Logger):
         self.desired_containers = self.container_roster.data
 
         self.sls_template_dir: str = Paths.sls_template_dir
-        self.load_sls_templates()
 
     def copy_from(self, source_container: str) -> List[str]:
         if source_container not in self.current_containers:
-            raise RuntimeError(f'Source container {source_container} does not exist!')
+            self.logger.log_and_raise(f'Source container {source_container} does not exist!')
 
         containers_before_copy: List[str] = list(self.current_containers)
         created_containers: List[str] = []
@@ -45,6 +44,9 @@ class ContainerMaster(Logger):
             self.logger.info(f'Copied {new_container} in {t_stop-t_start} seconds')
 
         return sorted(created_containers)
+
+    def configure(self):
+        self.load_sls_templates()
 
     def load_sls_templates(self):
         self.sls_templates_path: Path = Paths.containerization / self.sls_template_dir
@@ -69,8 +71,24 @@ class ContainerMaster(Logger):
         # create pillar/salt data
         pass
 
-    def activate_containers(self):  # TODO
-        pass
+    def activate_containers(self):
+        activated_containers: List[str] = []
+        activate_cmd: str = 'lxc-start -n {new_container}'
+
+        for new_container in self.desired_containers.keys():
+            if new_container not in self.current_containers:
+                self.logger.warn_and_continue(f'Container {source_container} does not exist; cannot start it!')
+                continue
+
+            t_start: float = perf_counter()
+            self.logger.info(f'Starting {new_container}')
+            result = os.popen(copy_cmd.format(new_container=new_container))
+            if len(result.read()) == 0:  # FIXME very weak, but dunno what failing looks like yet
+                activated_containers.append(new_container)
+            t_stop: float = perf_counter()
+            self.logger.info(f'Started {new_container} in {t_stop-t_start} seconds')
+
+        return sorted(activated_containers)
 
     def deactivate_containers(self):  # TODO
         pass
@@ -127,10 +145,12 @@ if __name__ == '__main__':
     elif args.configure:
         container_master.logger.info('Configuring containers')
         container_master.logger.info(container_master.sls_templates.keys())
+        container_master.configure()
 
     elif args.activate:
         container_master.logger.info('Activating containers')
-        container_master.activate_containers()
+        activated = container_master.activate_containers()
+        container_master.logger.info(f'Created containers: {activated}')
         # TODO? output commands to attach
 
     elif args.deactivate:
