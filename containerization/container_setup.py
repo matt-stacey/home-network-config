@@ -13,13 +13,13 @@ from yaml_handler import YamlFile
 
 
 class ContainerMaster(Logger):
-    def __init__(self, yaml_path: Path, sls_template_dir: str):
+    def __init__(self, yaml_path: Path):
         super().__init__('container_master')
 
         self.container_roster: YamlFile = YamlFile(yaml_path)
         self.desired_containers = self.container_roster.data
 
-        self.sls_template_dir: str  = sls_template_dir
+        self.sls_template_dir: str = Paths.sls_template_dir
         self.load_sls_templates()
 
     def copy_from(self, source_container: str) -> List[str]:
@@ -91,6 +91,7 @@ def make_parser():
     mode_group.add_argument('--copy', action='store_true', dest='copy', default=False)
     mode_group.add_argument('--configure', action='store_true', dest='configure', default=False)
     mode_group.add_argument('--activate', action='store_true', dest='activate', default=False)
+    mode_group.add_argument('--deactivate', action='store_true', dest='deactivate', default=False)
 
     parser.add_argument('-C', '--source-container',
                              required=False,
@@ -108,7 +109,7 @@ if __name__ == '__main__':
     parser = make_parser()
     args = parser.parse_args()
 
-    container_master = ContainerMaster(Path(args.yaml), Paths.sls_template_dir)
+    container_master = ContainerMaster(Path(args.yaml))
 
     container_master.logger.info(container_master.current_containers)
 
@@ -118,19 +119,23 @@ if __name__ == '__main__':
 
         created = []  # FIXME remove
         try:  # FIXME remove
-            created = container_master.copy_from(Defaults.source_container)
+            created = container_master.copy_from(args.source_container)
         except RuntimeError as err:  # FIXME remove
             container_master.logger.warning(err)  # FIXME remove
         container_master.logger.info(f'Created containers: {created}')
 
-    if args.configure:
+    elif args.configure:
         container_master.logger.info('Configuring containers')
         container_master.logger.info(container_master.sls_templates.keys())
 
-    if args.activate:
+    elif args.activate:
         container_master.logger.info('Activating containers')
         container_master.activate_containers()
         # TODO? output commands to attach
+
     elif args.deactivate:
         container_master.logger.info('Dectivating containers')
         container_master.deactivate_containers()
+
+    else:
+        container_master.logger.info('No action given!')
