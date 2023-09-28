@@ -71,27 +71,26 @@ class ContainerMaster(Logger):
         # create pillar/salt data
         pass
 
-    def activate_containers(self):
+    def activate_containers(self, turn_on: bool):
         activated_containers: List[str] = []
-        activate_cmd: str = 'lxc-start -n {new_container}'
+        subcommand: str = 'start' if turn_on else 'stop'
+        activate_cmd: str = 'lxc-{subcommand} -n {new_container}'
 
         for new_container in self.desired_containers.keys():
             if new_container not in self.current_containers:
-                self.logger.warn_and_continue(f'Container {source_container} does not exist; cannot start it!')
+                self.logger.warn_and_continue(f'Container {new_container} does not exist; cannot {subcommand} it!')
                 continue
 
             t_start: float = perf_counter()
-            self.logger.info(f'Starting {new_container}')
-            result = os.popen(copy_cmd.format(new_container=new_container))
+            self.logger.info(f'{subcommand.capitalize()}ing {new_container}')
+            result = os.popen(activate_cmd.format(subcommand=subcommand,
+                                                  new_container=new_container))
             if len(result.read()) == 0:  # FIXME very weak, but dunno what failing looks like yet
                 activated_containers.append(new_container)
             t_stop: float = perf_counter()
-            self.logger.info(f'Started {new_container} in {t_stop-t_start} seconds')
+            self.logger.info(f'{subcommand.capitalize()}ed {new_container} in {t_stop-t_start} seconds')
 
         return sorted(activated_containers)
-
-    def deactivate_containers(self):  # TODO
-        pass
 
     @property
     def current_containers(self) -> List[str]:
@@ -149,13 +148,16 @@ if __name__ == '__main__':
 
     elif args.activate:
         container_master.logger.info('Activating containers')
-        activated = container_master.activate_containers()
-        container_master.logger.info(f'Created containers: {activated}')
-        # TODO? output commands to attach
+        activated = container_master.activate_containers(True)
+        container_master.logger.info(f'Activated containers: {activated}')
+        container_master.logger.info('To attach to a container, run:')
+        for container in activated:
+            container_master.logger.info(f'lxc-attach -n {container}')
 
     elif args.deactivate:
         container_master.logger.info('Dectivating containers')
-        container_master.deactivate_containers()
+        deactivated = container_master.activate_containers(False)
+        container_master.logger.info(f'Deactivated containers: {deactivated}')
 
     else:
         container_master.logger.info('No action given!')
