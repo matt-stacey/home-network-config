@@ -92,6 +92,25 @@ class ContainerMaster(Logger):
 
         return sorted(activated_containers)
 
+    def start_salt_containers(self):
+        salted_containers: List[str] = []
+        salt_cmd: str = 'lxc-attach -n {container} -- /bin/bash -c "systemctl start salt-minion"'
+
+        for container in self.desired_containers.keys():
+            if container not in self.current_containers:
+                self.logger.warn_and_continue(f'Container {container} does not exist; cannot start Salt on it!')
+                continue
+
+            t_start: float = perf_counter()
+            self.logger.info(f'Starting Salt on {container}')
+            result = os.popen(salt_cmd.format(container=container))
+            if len(result.read()) == 0:  # FIXME very weak, but dunno what failing looks like yet
+                salted_containers.append(container)
+            t_stop: float = perf_counter()
+            self.logger.info(f'Started Salt on {container} in {t_stop-t_start} seconds')
+
+        return sorted(salted_containers)
+
     @property
     def current_containers(self) -> List[str]:
         lxc_cmd: str = 'lxc-ls -f'
@@ -109,6 +128,7 @@ def make_parser():
     mode_group.add_argument('--configure', action='store_true', dest='configure', default=False)
     mode_group.add_argument('--activate', action='store_true', dest='activate', default=False)
     mode_group.add_argument('--deactivate', action='store_true', dest='deactivate', default=False)
+    mode_group.add_argument('--start-salt', action='store_true', dest='start_salt', default=False)
 
     parser.add_argument('-C', '--source-container',
                              required=False,
@@ -158,6 +178,11 @@ if __name__ == '__main__':
         container_master.logger.info('Dectivating containers')
         deactivated = container_master.activate_containers(False)
         container_master.logger.info(f'Deactivated containers: {deactivated}')
+
+    elif args.start_salt:
+        container_master.logger.info('Starting Salt on all containers')
+        salted = container_master.start_salt_containers(False)
+        container_master.logger.info(f'Salt started on containers: {salted}')
 
     else:
         container_master.logger.info('No action given!')
