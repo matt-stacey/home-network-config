@@ -9,7 +9,7 @@ https://linuxcontainers.org/lxc/getting-started/
 ### Linux Containers
 https://wiki.archlinux.org/title/Linux_Containers
 
-### Requirements                                                
+### Requirements
 - glibc, musl libc, uclib or bionic
 - Linux kernel >= 3.12
 - libpam-cgfs
@@ -22,7 +22,7 @@ https://wiki.archlinux.org/title/Linux_Containers
 - liblua (for the LUA binding)
 - python3-dev (for the python3 binding)
 - `sudo apt install libc6 libpam-cgfs libcap-dev libapparmor-dev libselinux1-dev libseccomp-dev libgnutls30 liblua5.4-dev python3-dev uidmap`
-       
+
 ### LXC Installation
 - `sudo apt install lxc lxc-templates lxctl`
 - `lxc-checkconfig`
@@ -39,7 +39,7 @@ https://wiki.archlinux.org/title/Linux_Containers
 - call `source bashrc` from the command line to prep the virtual environment
 
 
-## Template Container
+## Create a Template Container
 - `sudo lxc-create -t download -n <privileged-container>`
 - Attach to the container: `lxc-attach -n <privileged-container>`
 - Basic configuration
@@ -61,7 +61,8 @@ https://wiki.archlinux.org/title/Linux_Containers
 
 
 ## Container Creation
-- `cd` into *containerization* create a container list based on the template
+- `cd` into *containerization*
+- create a container list based on the YAML example
 - Run the Python setup in copy mode: `python container_setup.py --copy -C <privileged-container> -Y <your YAML>`
 - wait while LXC copies the containers
 
