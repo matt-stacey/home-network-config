@@ -23,12 +23,15 @@ https://wiki.archlinux.org/title/Linux_Containers
 - python3-dev (for the python3 binding)
 - `sudo apt install libc6 libpam-cgfs libcap-dev libapparmor-dev libselinux1-dev libseccomp-dev libgnutls30 liblua5.4-dev python3-dev uidmap`
        
-### Installation
+### LXC Installation
 - `sudo apt install lxc lxc-templates lxctl`
 - `lxc-checkconfig`
-- `echo 'GRUB_CMDLINE_LINUX=systemd.unified_cgroup_hierarchy=false' > /etc/default/grub.d/cgroup.cfg`
-- `update-grub`
+- Possibly
+  - `echo 'GRUB_CMDLINE_LINUX=systemd.unified_cgroup_hierarchy=false' > /etc/default/grub.d/cgroup.cfg`
+  - `update-grub`
 
+### LXC Install Script
+- Runs the above `apt` commands and returns the output of `lxc-checkconfig`
 
 ## Repo / Virtual Environment Preparation
 - HTTPS: git clone --depth 1 https://github.com/matt-stacey/home_salt.git
