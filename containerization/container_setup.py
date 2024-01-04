@@ -48,6 +48,11 @@ class ContainerMaster(Logger):
     def configure(self):
         self.load_sls_templates()
 
+        for container in self.desired_containers:
+            if container not in self.created_containers:
+                self.logger.warning(f'Directed to configure container {container}, but it couldn\'t be found!')
+                continue
+
     def load_sls_templates(self):
         self.sls_templates_path: Path = Paths.containerization / self.sls_template_dir
         self.sls_template_env = Environment(loader=FileSystemLoader(self.sls_templates_path))
