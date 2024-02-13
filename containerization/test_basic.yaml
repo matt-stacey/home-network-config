@@ -1,0 +1,13 @@
+c1:
+  g: url1
+  mount:
+    hdd1: cont1
+    hdd2: cont2
+c2:
+  g: url2
+  mount: null
+c3:
+  g: url3
+  mount:
+    /root/Git/salt/salt: srv/salt
+    /root/Git/salt/pillar: srv/pillar
