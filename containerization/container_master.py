@@ -12,13 +12,12 @@ from yaml_handler import YamlFile
 
 
 class ContainerMaster(Logger):
+    sls_template_dir: str = Paths.sls_template_dir
+
     def __init__(self, yaml_path: Path):
         super().__init__('container_master')
 
-        self.container_roster: YamlFile = YamlFile(yaml_path)
-        self.desired_containers = self.container_roster.data
-
-        self.sls_template_dir: str = Paths.sls_template_dir
+        self.managed_containers: List[Container] = self.create_container_roster()
 
     def copy_from(self, source_container: str) -> List[str]:
         if source_container not in self.current_containers:
@@ -51,8 +50,12 @@ class ContainerMaster(Logger):
             if container not in self.created_containers:
                 self.logger.warning(f'Directed to configure {container}, but it couldn\'t be found!')
                 continue
-            
-            
+
+    def create_container_roster(self) -> List[Container]:
+        self._container_yaml: YamlFile = YamlFile(yaml_path)
+        managed_containers: List[Container] = [Container(container_name, self._container_yaml.data[container_name])
+                                               for container_name in self._container_yaml.data.keys()]
+        return managed_containers
 
     def load_sls_templates(self):
         self.sls_templates_path: Path = Paths.containerization / self.sls_template_dir
