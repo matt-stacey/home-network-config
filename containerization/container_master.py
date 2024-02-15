@@ -32,21 +32,21 @@ class ContainerMaster(Logger):
             self.logger.log_and_raise(f'Source container {source_container} does not exist!')
 
         containers_before_copy: List[str] = list(self.current_containers)
-        copy_cmd: str = 'lxc-copy -n {source_container} -N {new_container}'
 
-        for new_container in self.desired_containers.keys():
-            if new_container in containers_before_copy:
+        for new_container in self.managed_containers:
+            if new_container.name in containers_before_copy:
                 self.logger.warning(f'{new_container} already exists; skipping!')
                 continue
 
-            t_start: float = perf_counter()
             self.logger.info(f'Copying {source_container} to {new_container}')
-            result = os.popen(copy_cmd.format(source_container=source_container,
-                                              new_container=new_container))
-            if len(result.read()) == 0:  # FIXME very weak, but dunno what failing looks like yet
-                created_containers.append(new_container)
+            t_start: float = perf_counter()
+            result = new_container.copy(source_container)
             t_stop: float = perf_counter()
-            self.logger.info(f'Copied {new_container} in {t_stop-t_start} seconds')
+            if result:
+                created_containers.append(new_container.name)
+                self.logger.info(f'Copied {new_container} in {t_stop-t_start} seconds')
+            else:
+                self.logger.warning(f'Copying {new_container} FAILED after {t_stop-t_start} seconds')
 
         return sorted(created_containers)
 
