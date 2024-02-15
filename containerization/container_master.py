@@ -19,6 +19,7 @@ class ContainerMaster(Logger):
 
         self.managed_containers: List[Container] = self.create_container_roster()
 
+    # Major functions
     def copy_from(self, source_container: str) -> List[str]:
         """
         Copy an LXC container to our new container names
@@ -63,6 +64,34 @@ class ContainerMaster(Logger):
                 self.logger.warning(f'Directed to configure {container}, but it couldn\'t be found!')
                 continue
 
+    def activate_containers(self, turn_on: bool):
+        """
+        Activate or deactivate our containers
+        params: turn_on: bool
+        return: activated_containers: List[str]
+        """
+        activated_containers: List[str] = []
+
+        subcommand: str = 'start' if turn_on else 'stop'
+        activate_cmd: str = 'lxc-{subcommand} -n {new_container}'
+
+        for new_container in self.managed_containers.keys():
+            if new_container not in self.current_containers:
+                self.logger.warn_and_continue(f'Container {new_container} does not exist; cannot {subcommand} it!')
+                continue
+
+            t_start: float = perf_counter()
+            self.logger.info(f'{subcommand.capitalize()}ing {new_container}')
+            result = os.popen(activate_cmd.format(subcommand=subcommand,
+                                                  new_container=new_container))
+            if len(result.read()) == 0:  # FIXME very weak, but dunno what failing looks like yet
+                activated_containers.append(new_container)
+            t_stop: float = perf_counter()
+            self.logger.info(f'{subcommand.capitalize()}ed {new_container} in {t_stop-t_start} seconds')
+
+        return sorted(activated_containers)
+
+    # Helper functions
     def create_container_roster(self) -> List[Container]:
         self._container_yaml: YamlFile = YamlFile(yaml_path)
         managed_containers: List[Container] = [Container(container_name, self._container_yaml.data[container_name])
@@ -91,32 +120,6 @@ class ContainerMaster(Logger):
         # TODO configure as salt minion
         # create pillar/salt data
         pass
-
-    def activate_containers(self, turn_on: bool):
-        """
-        Activate or deactivate our containers
-        params: turn_on: bool
-        return: activated_containers: List[str]
-        """
-        activated_containers: List[str] = []
-        subcommand: str = 'start' if turn_on else 'stop'
-        activate_cmd: str = 'lxc-{subcommand} -n {new_container}'
-
-        for new_container in self.desired_containers.keys():
-            if new_container not in self.current_containers:
-                self.logger.warn_and_continue(f'Container {new_container} does not exist; cannot {subcommand} it!')
-                continue
-
-            t_start: float = perf_counter()
-            self.logger.info(f'{subcommand.capitalize()}ing {new_container}')
-            result = os.popen(activate_cmd.format(subcommand=subcommand,
-                                                  new_container=new_container))
-            if len(result.read()) == 0:  # FIXME very weak, but dunno what failing looks like yet
-                activated_containers.append(new_container)
-            t_stop: float = perf_counter()
-            self.logger.info(f'{subcommand.capitalize()}ed {new_container} in {t_stop-t_start} seconds')
-
-        return sorted(activated_containers)
 
     @property
     def current_containers(self) -> List[str]:
