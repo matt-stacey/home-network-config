@@ -6,13 +6,11 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
 
-from data import Paths
 from logger import Logger
 from yaml_handler import YamlFile
 
 
 class ContainerMaster(Logger):
-    sls_template_dir: str = Paths.sls_template_dir
 
     def __init__(self, yaml_path: Path):
         super().__init__('container_master')
@@ -57,13 +55,21 @@ class ContainerMaster(Logger):
         return: configured_containers: List[str]
         """
         configured_containers: List[str] = []
-
-        self.load_sls_templates()
         
-        for container in self.desired_containers:
-            if container not in self.created_containers:
+        for container in self.managed_containers:
+            if container.name not in self.current_containers:
                 self.logger.warning(f'Directed to configure {container}, but it couldn\'t be found!')
                 continue
+
+            self.logger.info(f'Configuring {container}')
+            t_start: float = perf_counter()
+            result = container.configure()
+            t_stop: float = perf_counter()
+            if result:
+                configured_containers.append(container.name)
+                self.logger.info(f'Configured {container} in {t_stop-t_start} seconds')
+            else:
+                self.logger.warning(f'Configuring {container} FAILED after {t_stop-t_start} seconds')
 
         return sorted(configured_containers)
 
@@ -100,16 +106,6 @@ class ContainerMaster(Logger):
         managed_containers: List[Container] = [Container(container_name, self._container_yaml.data[container_name])
                                                for container_name in self._container_yaml.data.keys()]
         return managed_containers
-
-    def load_sls_templates(self):
-        self.sls_templates_path: Path = Paths.containerization / self.sls_template_dir
-        self.sls_template_env = Environment(loader=FileSystemLoader(self.sls_templates_path))
-
-        self.sls_templates = {}  # type: ignore
-
-        for file_path in self.sls_templates_path.glob('*'):
-            if file_path.suffix == Paths.sls_template_suffix:
-                self.sls_templates[file_path.stem] = self.sls_template_env.get_template(file_path.name)
 
     # TODO function to 'mount' drives
     # from yaml data
