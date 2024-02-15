@@ -20,6 +20,12 @@ class ContainerMaster(Logger):
         self.managed_containers: List[Container] = self.create_container_roster()
 
     def copy_from(self, source_container: str) -> List[str]:
+        """
+        Copy an LXC container to our new container names
+        params: source_container: str
+        return: created_containers: List[str]
+        """
+
         if source_container not in self.current_containers:
             self.logger.log_and_raise(f'Source container {source_container} does not exist!')
 
@@ -44,6 +50,12 @@ class ContainerMaster(Logger):
         return sorted(created_containers)
 
     def configure(self):
+        """
+        Configure our containers
+        params: none
+        return: configured_containers: List[str]
+        """
+
         self.load_sls_templates()
         
         for container in self.desired_containers:
@@ -81,6 +93,11 @@ class ContainerMaster(Logger):
         pass
 
     def activate_containers(self, turn_on: bool):
+        """
+        Activate or deactivate our containers
+        params: turn_on: bool
+        return: activated_containers: List[str]
+        """
         activated_containers: List[str] = []
         subcommand: str = 'start' if turn_on else 'stop'
         activate_cmd: str = 'lxc-{subcommand} -n {new_container}'
