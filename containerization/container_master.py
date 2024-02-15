@@ -26,12 +26,12 @@ class ContainerMaster(Logger):
         params: source_container: str
         return: created_containers: List[str]
         """
+        created_containers: List[str] = []
 
         if source_container not in self.current_containers:
             self.logger.log_and_raise(f'Source container {source_container} does not exist!')
 
         containers_before_copy: List[str] = list(self.current_containers)
-        created_containers: List[str] = []
         copy_cmd: str = 'lxc-copy -n {source_container} -N {new_container}'
 
         for new_container in self.desired_containers.keys():
@@ -50,12 +50,13 @@ class ContainerMaster(Logger):
 
         return sorted(created_containers)
 
-    def configure(self):
+    def configure(self) -> List[str]:
         """
         Configure our containers
         params: none
         return: configured_containers: List[str]
         """
+        configured_containers: List[str] = []
 
         self.load_sls_templates()
         
@@ -64,7 +65,9 @@ class ContainerMaster(Logger):
                 self.logger.warning(f'Directed to configure {container}, but it couldn\'t be found!')
                 continue
 
-    def activate_containers(self, turn_on: bool):
+        return sorted(configured_containers)
+
+    def activate_containers(self, turn_on: bool) -> List[str]:
         """
         Activate or deactivate our containers
         params: turn_on: bool
