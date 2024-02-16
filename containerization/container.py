@@ -73,6 +73,19 @@ class Container(Logger):
             if file_path.suffix == Paths.sls_template_suffix:
                 self.sls_templates[file_path.stem] = self.sls_template_env.get_template(file_path.name)
 
+    # TODO function to 'mount' drives
+    # from yaml data
+    # .ssh
+
+    # TODO function to create Git folder
+
+    # TODO function to place (completed) templates
+
+    def minionize(self):
+        # TODO configure as salt minion
+        # create pillar/salt data
+        pass
+
     @staticmethod
     def time_it(func, *args):
         t_start: float = perf_counter()

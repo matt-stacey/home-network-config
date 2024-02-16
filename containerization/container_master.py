@@ -76,25 +76,18 @@ class ContainerMaster(Logger):
 
         return sorted(activated_containers)
 
+    def start_salt_containers(self, input_var):
+        """
+        TODO doc string and function, or remove from setup script
+        """
+        return input_var
+
     # Helper functions
     def create_container_roster(self) -> List[Container]:
         self._container_yaml: YamlFile = YamlFile(yaml_path)
         managed_containers: List[Container] = [Container(container_name, self._container_yaml.data[container_name])
                                                for container_name in self._container_yaml.data.keys()]
         return managed_containers
-
-    # TODO function to 'mount' drives
-    # from yaml data
-    # .ssh
-
-    # TODO function to create Git folder
-
-    # TODO function to place (completed) templates
-
-    def minionize(self):
-        # TODO configure as salt minion
-        # create pillar/salt data
-        pass
 
     @property
     def current_containers(self) -> List[str]:
