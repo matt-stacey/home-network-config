@@ -36,15 +36,8 @@ class ContainerMaster(Logger):
                 self.logger.warning(f'{new_container} already exists; skipping!')
                 continue
 
-            self.logger.info(f'Copying {source_container} to {new_container}')
-            t_start: float = perf_counter()
-            result = new_container.copy(source_container)
-            t_stop: float = perf_counter()
-            if result:
+            if new_container.copy_from(source_container):
                 created_containers.append(new_container.name)
-                self.logger.info(f'Copied {new_container} in {t_stop-t_start} seconds')
-            else:
-                self.logger.warning(f'Copying {new_container} FAILED after {t_stop-t_start} seconds')
 
         return sorted(created_containers)
 
@@ -61,15 +54,8 @@ class ContainerMaster(Logger):
                 self.logger.warning(f'Directed to configure {container}, but it couldn\'t be found!')
                 continue
 
-            self.logger.info(f'Configuring {container}')
-            t_start: float = perf_counter()
-            result = container.configure()
-            t_stop: float = perf_counter()
-            if result:
+            if container.configure():
                 configured_containers.append(container.name)
-                self.logger.info(f'Configured {container} in {t_stop-t_start} seconds')
-            else:
-                self.logger.warning(f'Configuring {container} FAILED after {t_stop-t_start} seconds')
 
         return sorted(configured_containers)
 
