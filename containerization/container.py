@@ -46,6 +46,22 @@ class Container(Logger):
             self.logger.warning(f'Configuring failed after {cumulative_time} seconds')
         return success
 
+    def activate(self, turn_on: bool) -> bool:
+        subcommand: str = 'start' if turn_on else 'stop'
+        activate_cmd: str = f'lxc-{subcommand} -n {self.name}'
+
+        self.logger.info(f'{subcommand.capitalize()}ing')
+        output, time_taken = self.time_it(os.popen, activate_cmd)
+
+        if len(output.read()) == 0:
+            # FIXME very weak way of determining if copied successfully,
+            #       but haven't encountered failing to see what that looks like yet
+            self.logger.info(f'{subcommand.capitalize()}ed in {time_taken} seconds')
+            return True
+
+        self.logger.warning(f'{subcommand.capitalize()}ing failed after {time_taken} seconds')
+        return False
+
     # Helper functions
     def load_sls_templates(self):
         self.sls_templates_path: Path = Paths.containerization / self.sls_template_dir

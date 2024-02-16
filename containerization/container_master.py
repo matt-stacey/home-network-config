@@ -11,7 +11,6 @@ from yaml_handler import YamlFile
 
 
 class ContainerMaster(Logger):
-
     def __init__(self, yaml_path: Path):
         super().__init__('container_master')
 
@@ -48,7 +47,7 @@ class ContainerMaster(Logger):
         return: configured_containers: List[str]
         """
         configured_containers: List[str] = []
-        
+
         for container in self.managed_containers:
             if container.name not in self.current_containers:
                 self.logger.warning(f'Directed to configure {container}, but it couldn\'t be found!')
@@ -67,22 +66,13 @@ class ContainerMaster(Logger):
         """
         activated_containers: List[str] = []
 
-        subcommand: str = 'start' if turn_on else 'stop'
-        activate_cmd: str = 'lxc-{subcommand} -n {new_container}'
-
         for new_container in self.managed_containers.keys():
             if new_container not in self.current_containers:
                 self.logger.warn_and_continue(f'Container {new_container} does not exist; cannot {subcommand} it!')
                 continue
 
-            t_start: float = perf_counter()
-            self.logger.info(f'{subcommand.capitalize()}ing {new_container}')
-            result = os.popen(activate_cmd.format(subcommand=subcommand,
-                                                  new_container=new_container))
-            if len(result.read()) == 0:  # FIXME very weak, but dunno what failing looks like yet
-                activated_containers.append(new_container)
-            t_stop: float = perf_counter()
-            self.logger.info(f'{subcommand.capitalize()}ed {new_container} in {t_stop-t_start} seconds')
+            if container.activate(turn_on):
+                activated_containers.append(container.name)
 
         return sorted(activated_containers)
 
