@@ -25,7 +25,7 @@ class Container(Logger):
         output, time_taken = self.time_it(os.popen, copy_cmd)
 
         if len(output.read()) == 0:
-            # FIXME very weak way of determining if copied successfully,
+            # FIXME very weak way of determining if successful,
             #       but haven't encountered failing to see what that looks like yet
             self.logger.info(f'Copied in {time_taken} seconds')
             return True
@@ -33,8 +33,23 @@ class Container(Logger):
         self.logger.warning(f'Copying failed after {time_taken} seconds')
         return False
 
+    def remove(self) -> bool:
+        remove_cmd: str = f'lxc-destroy -n {self.name}'
+
+        self.logger.info('Removing')
+        output, time_taken = self.time_it(os.popen, remove_cmd)
+
+        if len(output.read()) == 0:
+            # FIXME very weak way of determining if successful,
+            #       but haven't encountered failing to see what that looks like yet
+            self.logger.info(f'Removed in {time_taken} seconds')
+            return True
+
+        self.logger.warning(f'Removing failed after {time_taken} seconds')
+        return False
+
     def configure(self) -> bool:
-        self.logger.info(f'Configuring')
+        self.logger.info('Configuring')
         success: bool = True
         _, cumulative_time = self.time_it(self.load_sls_templates)
 
@@ -54,7 +69,7 @@ class Container(Logger):
         output, time_taken = self.time_it(os.popen, activate_cmd)
 
         if len(output.read()) == 0:
-            # FIXME very weak way of determining if copied successfully,
+            # FIXME very weak way of determining if successful,
             #       but haven't encountered failing to see what that looks like yet
             self.logger.info(f'{subcommand.capitalize()}ed in {time_taken} seconds')
             return True

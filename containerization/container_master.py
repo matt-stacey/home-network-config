@@ -40,6 +40,26 @@ class ContainerMaster(Logger):
 
         return sorted(created_containers)
 
+    def destroy(self) -> List[str]:
+        """
+        Destroy containers named in the YAML
+        params: none
+        return: destroyed_containers: List[str]
+        """
+        destroyed_containers: List[str] = []
+
+        containers_before_destroy: List[str] = list(self.current_containers)
+
+        for container in self.managed_containers:
+            if container.name not in containers_before_destroy:
+                self.logger.warning(f'{container} does not exist; skipping!')
+                continue
+
+            if container.remove():
+                destroyed_containers.append(container.name)
+
+        return sorted(destroyed_containers)
+
     def configure(self) -> List[str]:
         """
         Configure our containers

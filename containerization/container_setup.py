@@ -14,6 +14,7 @@ def make_parser():
 
     mode_group = parser.add_mutually_exclusive_group()
     mode_group.add_argument('--copy', action='store_true', dest='copy', default=False)
+    mode_group.add_argument('--destroy', action='store_true', dest='destroy', default=False
     mode_group.add_argument('--configure', action='store_true', dest='configure', default=False)
     mode_group.add_argument('--activate', action='store_true', dest='activate', default=False)
     mode_group.add_argument('--deactivate', action='store_true', dest='deactivate', default=False)
@@ -47,6 +48,11 @@ if __name__ == '__main__':
         logger.debug(container_master.desired_containers.keys())
         created = container_master.copy_from(args.source_container)
         logger.info(f'Created containers: {created}')
+
+    elif args.destroy:
+        logger.info('Destroying containers')
+        destroyed = container_master.destroy()
+        logger.info(f'Destroyed containers: {destroyed}')
 
     elif args.configure:
         logger.info('Configuring containers')
