@@ -29,6 +29,7 @@ class ContainerMaster(Logger):
             self.logger.log_and_raise(f'Source container {source_container} does not exist!')
 
         containers_before_copy: List[str] = list(self.current_containers)
+        os.popen(f'lxc-stop -n {source_container}')  # Must be stopped before copying
 
         for new_container in self.managed_containers:
             if new_container.name in containers_before_copy:
