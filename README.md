@@ -3,6 +3,24 @@ Salt and LXC setup for home network
 
 ## LXC Preparation
 
+### Setting up an Ethernet bridge
+- Get the Ethernet interface name: `ip a`
+- Create a bridge that is a master to the Ethernet connection:
+  - https://thenewstack.io/how-to-create-a-bridged-network-for-lxd-containers/
+  - Copy `managed_files/netplan/99-netplan.yaml` to `/etc/netplan/`
+  - Modify the Ethernet adapter name in 2 places to whatever `ip a` returned for this machine
+  - `sudo netplan generate`
+  - `sudo netplan apply`
+- Turn off DHCPCD on the machine
+  - https://askubuntu.com/questions/1269837/netplan-bridge-cannot-ping-local-network-devices
+  - `sudo systemctl disable dchpcd`
+- Run `ip a` again to get the new IP address of the bridge
+- Reboot and SSH onto the **new** IP address
+  - Wouldn't hurt to give it a permanent lease
+- There are other methods:
+  - https://www.cyberciti.biz/faq/how-to-add-network-bridge-with-nmcli-networkmanager-on-linux/
+  - https://ubuntu.com/blog/converting-eth0-to-br0-and-getting-all-your-lxc-or-lxd-onto-your-lan
+
 ### LXC Containers - Getting Started
 https://linuxcontainers.org/lxc/getting-started/
 
@@ -32,6 +50,7 @@ https://wiki.archlinux.org/title/Linux_Containers
 
 ### LXC Install Script
 - Runs the above `apt` commands and returns the output of `lxc-checkconfig`
+
 
 ## Repo / Virtual Environment Preparation
 - HTTPS: git clone --depth 1 https://github.com/matt-stacey/home_salt.git
