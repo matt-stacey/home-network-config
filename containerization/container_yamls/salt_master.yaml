@@ -1,0 +1,6 @@
+salt_master:
+    git_url: https://github.com/matt-stacey/home_salt.git
+
+minion_bootstrapper:
+    # template must be salted manually
+    blank: null

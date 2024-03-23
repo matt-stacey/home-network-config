@@ -17,4 +17,7 @@ class Paths:
         return Paths.lxc_data / container
 
 class Defaults:
-    source_container: str = 'x553-minion-bootstrapper'
+    source_container: str = 'z97x-minion_bootstrapper'
+
+    git_key: str = 'git_urls'  # key in YAML to indicate a git repo to be cloned
+    cmds_key: str = 'commands'  # key to indicate a list of commands to run
