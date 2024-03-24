@@ -18,7 +18,7 @@ class Container(Logger):
         self.name: str = f'{self.host}-{name}'  # include hostname in the name
 
         self.git_repos = []
-        if Defaults.git_key in container_data:
+        if Defaults.git_key in container_data and container_data[Defaults.git_key]:
             self.git_repos = list(container_data[Defaults.git_key])
 
     def __repr__(self):

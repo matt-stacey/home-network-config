@@ -1,119 +1,144 @@
 droppy:
     git_urls:
         - https://github.com/droppyjs/droppy
+
 samba:
     git_urls:
         - https://git.samba.org/samba.git/
+
 gitea:
     git_urls:
         - https://github.com/go-gitea/gitea
+
 snapshot:
-    git_urls:
-        - false
-it tools:
-    git_urls:
-        - false
+    git_urls: false
+
+it_tools:
+    git_urls: false
+
 nginx:
     git_urls:
         - https://github.com/NginxProxyManager/nginx-proxy-manager
+
 grafana:  # Network monitor
-    git_urls:
-        - false
+    git_urls: false
+
 nextcloud:
     git_urls:
         - https://github.com/nextcloud/server
         - https://github.com/pulsejet/memories
+
 emby:
     git_urls:
         - https://github.com/MediaBrowser/Emby
+
 airsonic-advanced:  # media streamer
     git_urls:
         - https://github.com/airsonic-advanced/airsonic-advanced
+
 dashy:
     git_urls:
         - https://github.com/lissy93/dashy
+
 heimdall:
     git_urls:
         - https://github.com/linuxserver/Heimdall
-home assistant:
-    git_urls:
-        - false
+
+home_assistant:
+    git_urls: false
+
 meshtastic:
     git_urls:
         - https://meshtastic.org/docs/software/python/cli/installation
+
 adguard:
     git_urls:
         - https://github.com/AdguardTeam/AdGuardHome
+
 paperless:  # doc repo
     git_urls:
         - https://github.com/paperless-ngx/paperless-ngx
+
 wallabag:  # read-it-later
     git_urls:
         - https://github.com/wallabag/wallabag
+
 radarr:
     git_urls:
         - https://github.com/Radarr/Radarr
+
 lidarr:
     git_urls:
         - https://github.com/Lidarr/Lidarr
+
 sonarr:
     git_urls:
         - https://github.com/Sonarr/Sonarr
+
 overseerr:
     git_urls:
         - https://github.com/sct/overseerr
-tube archivist:
+
+tube_archivist:
     git_urls:
         - https://github.com/tubearchivist/tubearchivist
+
 metube:
     git_urls:
         - https://github.com/alexta69/metube
-dcs server:
-    git_urls:
-        - false
-space engineers server:
-    git_urls:
-        - false
-minecraft server:
-    git_urls:
-        - false
-mindustry server:
-    git_urls:
-        - false
+
+dcs_server:
+    git_urls: false
+
+space_engineers_server:
+    git_urls: false
+
+minecraft_server:
+    git_urls: false
+
+empyrion_server:
+    git_urls: false
 
 # Anything else on
 # https://github.com/awesome-selfhosted/awesome-selfhosted
-pi-hole:
-    git_urls:
-        - https://github.com/pi-hole/pi-hole
-mayan edms:
+
+mayan_edms:
     git_urls:
         - https://gitlab.com/mayan-edms/mayan-edms
+
 calibre:
     git_urls:
         - https://github.com/janeczku/calibre-web
-    other: https://launchpad.net/calibre
+    other:
+        - https://launchpad.net/calibre
+
 audiobookshelf:
     git_urls:
         - https://github.com/advplyr/audiobookshelf
-open meteo:
+
+open_meteo:
     git_urls:
         - https://github.com/open-meteo/open-meteo
-open ziti:
+
+open_ziti:
     git_urls:
         - https://github.com/openziti/ziti
-budget tool:
-    git_urls:
-        - false
+
+budget_tool:
+    git_urls: false
+
 groceri.es:
     git_urls:
         - https://github.com/juriansluiman/groceri.es
+
 farmos:
     git_urls:
         - https://github.com/farmOS/farmOS
+
 tania:  # farm tool
     git_urls:
         - https://github.com/usetania/tania-core
-open project:
+
+open_project:
     git_urls:
         - https://github.com/opf/openproject

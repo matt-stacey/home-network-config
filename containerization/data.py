@@ -16,6 +16,7 @@ class Paths:
     def container_data(container):
         return Paths.lxc_data / container
 
+
 class Defaults:
     source_container: str = 'z97x-minion_bootstrapper'
 

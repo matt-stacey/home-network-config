@@ -1,0 +1,9 @@
+wireguard:
+    git_urls: false
+
+openvpn:
+    git_urls: false
+
+pi-hole:
+    git_urls:
+        - https://github.com/pi-hole/pi-hole
