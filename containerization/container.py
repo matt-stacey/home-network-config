@@ -17,9 +17,13 @@ class Container(Logger):
 
         self.name: str = f'{self.host}-{name}'  # include hostname in the name
 
-        self.git_repos = []
+        self.git_repos: list[str] = []
         if Data.git_key in container_data and container_data[Data.git_key]:
             self.git_repos = list(container_data[Data.git_key])
+
+        self.commands: list[str] = []
+        if Data.cmds_key in container_data and container_data[Data.cmds_key]:
+            self.commands = list(container_data[Data.cmds_key])
 
     def __repr__(self):
         return self.name
@@ -61,11 +65,13 @@ class Container(Logger):
         _, sls_load_time = self.time_it(self.load_sls_templates)
 
         _, git_time = self.time_it(self.clone_git_repos)
+        _, cmd_time = self.time_it(self.execute_command_list)
 
         # TODO other configuration
 
         cumulative_time = sls_load_time + \
-                          git_time
+                          git_time + \
+                          cmd_time
         if success:
             self.logger.info(f'Configured in {cumulative_time} seconds')
         else:
@@ -114,6 +120,12 @@ class Container(Logger):
                                     '&&',
                                     'git', 'clone', repo]
             subprocess.run(clone_cmd)
+
+    def execute_command_list(self):
+        for command in self.commands:
+            cmd_to_run: list[str] = ['lxc-attach', '-n', self.name,
+                                      '--', command]
+            subprocess.run(cmd_to_run)
 
     # TODO function to place (completed) templates
 
