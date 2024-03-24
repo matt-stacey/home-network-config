@@ -1,4 +1,6 @@
 import os
+import socket
+
 from pathlib import Path
 
 
@@ -17,8 +19,9 @@ class Paths:
         return Paths.lxc_data / container
 
 
-class Defaults:
-    source_container: str = 'z97x-minion_bootstrapper'
+class Data:
+    hostname: str = socket.gethostname()
+    source_container: str = f'{hostname}-minion_bootstrapper'
 
     git_key: str = 'git_urls'  # key in YAML to indicate a git repo to be cloned
     cmds_key: str = 'commands'  # key to indicate a list of commands to run

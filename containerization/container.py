@@ -5,7 +5,7 @@ import subprocess
 from time import perf_counter
 from pathlib import Path
 
-from data import Paths, Defaults
+from data import Paths, Data
 from logger import Logger
 
 
@@ -18,8 +18,8 @@ class Container(Logger):
         self.name: str = f'{self.host}-{name}'  # include hostname in the name
 
         self.git_repos = []
-        if Defaults.git_key in container_data and container_data[Defaults.git_key]:
-            self.git_repos = list(container_data[Defaults.git_key])
+        if Data.git_key in container_data and container_data[Data.git_key]:
+            self.git_repos = list(container_data[Data.git_key])
 
     def __repr__(self):
         return self.name
@@ -125,7 +125,7 @@ class Container(Logger):
     # Properties
     @property
     def host(self) -> str:
-        return socket.gethostname()
+        return Data.hostname
 
     @property
     def path(self) -> Path:
