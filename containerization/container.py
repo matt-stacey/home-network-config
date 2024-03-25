@@ -30,12 +30,12 @@ class Container(Logger):
 
     # Main functions
     def copy(self, source_container: str) -> bool:
-        copy_cmd: str = 'lxc-copy -n {source_container} -N {self.name}'
+        copy_cmd: str = f'lxc-copy -n {source_container} -N {self.name}'
 
-        self.logger.info(f'Copying from {source_container}')
-        output, time_taken = self.time_it(os.popen, copy_cmd)  # FIXME os
+        self.logger.info(copy_cmd)
+        output, time_taken = self.time_popen(copy_cmd)  # FIXME os
 
-        if len(output.read()) == 0:
+        if len(output) == 0:
             # FIXME very weak way of determining if successful,
             #       but haven't encountered failing to see what that looks like yet
             self.logger.info(f'Copied in {time_taken} seconds')
@@ -47,10 +47,10 @@ class Container(Logger):
     def remove(self) -> bool:
         remove_cmd: str = f'lxc-destroy -n {self.name}'
 
-        self.logger.info('Removing')
-        output, time_taken = self.time_it(os.popen, remove_cmd)  # FIXME os
+        self.logger.info(remove_cmd)
+        output, time_taken = self.time_popen(remove_cmd)  # FIXME os
 
-        if len(output.read()) == 0:
+        if len(output) == 0:
             # FIXME very weak way of determining if successful,
             #       but haven't encountered failing to see what that looks like yet
             self.logger.info(f'Removed in {time_taken} seconds')
@@ -82,10 +82,10 @@ class Container(Logger):
         subcommand: str = 'start' if turn_on else 'stop'
         activate_cmd: str = f'lxc-{subcommand} -n {self.name}'
 
-        self.logger.info(f'{subcommand.capitalize()}ing')
-        output, time_taken = self.time_it(os.popen, activate_cmd)  # FIXME os
+        self.logger.info(activate_cmd)
+        output, time_taken = self.time_popen(activate_cmd)  # FIXME os
 
-        if len(output.read()) == 0:
+        if len(output) == 0:
             # FIXME very weak way of determining if successful,
             #       but haven't encountered failing to see what that looks like yet
             self.logger.info(f'{subcommand.capitalize()}ed in {time_taken} seconds')
@@ -159,3 +159,13 @@ class Container(Logger):
 
         time_taken = t_stop - t_start
         return result, time_taken
+
+    @staticmethod
+    def time_popen(command):
+        t_start: float = perf_counter()
+        result = os.popen(command).read()
+        t_stop: float = perf_counter()
+
+        time_taken = t_stop - t_start
+        return result, time_taken
+

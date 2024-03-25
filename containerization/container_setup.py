@@ -5,7 +5,7 @@ from pathlib import Path
 
 from container_master import ContainerMaster
 
-from data import Defaults
+from data import Data
 from logger import Logger
 
 
@@ -14,7 +14,7 @@ def make_parser():
 
     mode_group = parser.add_mutually_exclusive_group()
     mode_group.add_argument('--copy', action='store_true', dest='copy', default=False)
-    mode_group.add_argument('--destroy', action='store_true', dest='destroy', default=False
+    mode_group.add_argument('--destroy', action='store_true', dest='destroy', default=False)
     mode_group.add_argument('--configure', action='store_true', dest='configure', default=False)
     mode_group.add_argument('--activate', action='store_true', dest='activate', default=False)
     mode_group.add_argument('--deactivate', action='store_true', dest='deactivate', default=False)
@@ -22,8 +22,8 @@ def make_parser():
 
     parser.add_argument('-C', '--source-container',
                              required=False,
-                             default=Defaults.source_container,
-                             help=f'Container from which to copy (default: {Defaults.source_container})')
+                             default=Data.source_container,
+                             help=f'Container from which to copy (default: {Data.source_container})')
 
     parser.add_argument('-Y', '--yaml',
                         required=True,
@@ -41,11 +41,11 @@ if __name__ == '__main__':
     container_setup = Logger('container_setup')
     logger = container_setup.logger  # janky
     logger.setLevel(logging.DEBUG)
-    logger.info(container_master.current_containers)
+    logger.info(f'Existing containers: {container_master.current_containers}')
 
     if args.copy:
         logger.info(f'Copying containers from {args.source_container}')
-        logger.debug(container_master.desired_containers.keys())
+        logger.debug(container_master.managed_containers)
         created = container_master.copy_from(args.source_container)
         logger.info(f'Created containers: {created}')
 
@@ -82,3 +82,6 @@ if __name__ == '__main__':
 
     else:
         logger.info('No action given!')
+
+    logger.info(f'Existing containers: {container_master.current_containers}')
+

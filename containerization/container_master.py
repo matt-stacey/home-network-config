@@ -9,12 +9,14 @@ from jinja2 import Environment, FileSystemLoader
 from logger import Logger
 from yaml_handler import YamlFile
 
+from container import Container
+
 
 class ContainerMaster(Logger):
     def __init__(self, yaml_path: Path):
         super().__init__('container_master')
 
-        self.managed_containers: List[Container] = self.create_container_roster()
+        self.managed_containers: List[Container] = self.create_container_roster(yaml_path)
 
     # Major functions
     def copy_from(self, source_container: str) -> List[str]:
@@ -26,17 +28,17 @@ class ContainerMaster(Logger):
         created_containers: List[str] = []
 
         if source_container not in self.current_containers:
-            self.logger.log_and_raise(f'Source container {source_container} does not exist!')
+            self.log_and_raise(f'Source container {source_container} does not exist!')
 
         containers_before_copy: List[str] = list(self.current_containers)
-        os.popen(f'lxc-stop -n {source_container}')  # Must be stopped before copying
+        os.popen(f'lxc-stop -n {source_container}').read()  # Must be stopped before copying
 
         for new_container in self.managed_containers:
             if new_container.name in containers_before_copy:
                 self.logger.warning(f'{new_container} already exists; skipping!')
                 continue
 
-            if new_container.copy_from(source_container):
+            if new_container.copy(source_container):
                 created_containers.append(new_container.name)
 
         return sorted(created_containers)
@@ -86,10 +88,11 @@ class ContainerMaster(Logger):
         return: activated_containers: List[str]
         """
         activated_containers: List[str] = []
+        subcommand: str = 'start' if turn_on else 'stop'
 
-        for new_container in self.managed_containers.keys():
-            if new_container not in self.current_containers:
-                self.logger.warn_and_continue(f'Container {new_container} does not exist; cannot {subcommand} it!')
+        for container in self.managed_containers:
+            if container.name not in self.current_containers:
+                self.warn_and_continue(f'Container {container} does not exist; cannot {subcommand} it!')
                 continue
 
             if container.activate(turn_on):
@@ -104,7 +107,7 @@ class ContainerMaster(Logger):
         return input_var
 
     # Helper functions
-    def create_container_roster(self) -> List[Container]:
+    def create_container_roster(self, yaml_path: Path) -> List[Container]:
         self._container_yaml: YamlFile = YamlFile(yaml_path)
         managed_containers: List[Container] = [Container(container_name, self._container_yaml.data[container_name])
                                                for container_name in self._container_yaml.data.keys()]
