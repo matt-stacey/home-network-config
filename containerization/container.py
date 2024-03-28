@@ -25,6 +25,10 @@ class Container(Logger):
         if Data.cmds_key in container_data and container_data[Data.cmds_key]:
             self.commands = list(container_data[Data.cmds_key])
 
+        self.mount_points: list[str] = []
+        if Data.mount_key in container_data and container_data[Data.mount_key]:
+            self.mount_points = list(container_data[Data.mount_key])
+
     def __repr__(self):
         return self.name
 
@@ -66,12 +70,14 @@ class Container(Logger):
 
         _, git_time = self.time_it(self.clone_git_repos)
         _, cmd_time = self.time_it(self.execute_command_list)
+        _, mnt_time = self.time_it(self.set_mount_points)
 
         # TODO other configuration
 
         cumulative_time = sls_load_time + \
                           git_time + \
-                          cmd_time
+                          cmd_time + \
+                          mnt_time
         if success:
             self.logger.info(f'Configured in {cumulative_time} seconds')
         else:
@@ -105,10 +111,6 @@ class Container(Logger):
             if file_path.suffix == Paths.sls_template_suffix:
                 self.sls_templates[file_path.stem] = self.sls_template_env.get_template(file_path.name)
 
-    # TODO function to 'mount' drives
-    # from yaml data
-    # .ssh
-
     def clone_git_repos(self):
         git_directory: Path = self.user_home / 'git'
         subprocess.run(['lxc-attach', '-n', self.name, '--', 'mkdir', '~/git'])
@@ -127,6 +129,18 @@ class Container(Logger):
                                       '--', command]
             subprocess.run(cmd_to_run)
 
+    def set_mount_points(self):
+        # each mount point needs added at
+        # /var/lib/lxc/<container>/config with:
+        # lxc.mount.entry = /root/.ssh srv/.ssh none bind 0 0
+        mount_note: list[str] = ["",
+                                 "# Additional mount points"
+                                ]
+
+        for line in mount_note + self.mount_points:
+            command: list[str] = ["echo", line, ">>", f"{self.config}"]
+            subprocess.run(command)
+
     # TODO function to place (completed) templates
 
     def minionize(self):
@@ -142,6 +156,10 @@ class Container(Logger):
     @property
     def path(self) -> Path:
         return Paths.lxc_data / self.name
+
+    @property
+    def config(self) -> Path:
+        return self.path / 'config'
 
     @property
     def root(self) -> Path:
@@ -168,4 +186,3 @@ class Container(Logger):
 
         time_taken = t_stop - t_start
         return result, time_taken
-

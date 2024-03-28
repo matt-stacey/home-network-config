@@ -7,4 +7,3 @@ openvpn:
 pi-hole:
     git_urls:
         - https://github.com/pi-hole/pi-hole
-

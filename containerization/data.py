@@ -23,5 +23,7 @@ class Data:
     hostname: str = socket.gethostname()
     source_container: str = f'{hostname}-minion_bootstrapper'
 
-    git_key: str = 'git_urls'  # key in YAML to indicate a git repo to be cloned
-    cmds_key: str = 'commands'  # key to indicate a list of commands to run
+    # Keys from YAML config files
+    git_key: str = 'git_urls'  # git repos to be cloned
+    cmds_key: str = 'commands'  # commands to run
+    mount_key: str = 'mount'  # mount points

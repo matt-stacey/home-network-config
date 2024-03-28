@@ -50,6 +50,7 @@ https://wiki.archlinux.org/title/Linux_Containers
 - There are other methods:
   - https://www.cyberciti.biz/faq/how-to-add-network-bridge-with-nmcli-networkmanager-on-linux/
   - https://ubuntu.com/blog/converting-eth0-to-br0-and-getting-all-your-lxc-or-lxd-onto-your-lan
+    - This one is great for a Raspberry Pi; make sure to turn `dhcpcd` off. Might require reassigning the MAC in ARP and/or reboots all around.
 
 
 ## Repo / Virtual Environment Preparation
