@@ -16,18 +16,11 @@ class Container(Logger):
         super().__init__(name)
 
         self.name: str = f'{self.host}-{name}'  # include hostname in the name
+        self.container_data = container_data  # type: ignore
 
-        self.git_repos: list[str] = []
-        if Data.git_key in container_data and container_data[Data.git_key]:
-            self.git_repos = list(container_data[Data.git_key])
-
-        self.commands: list[str] = []
-        if Data.cmds_key in container_data and container_data[Data.cmds_key]:
-            self.commands = list(container_data[Data.cmds_key])
-
-        self.mount_points: list[str] = []
-        if Data.mount_key in container_data and container_data[Data.mount_key]:
-            self.mount_points = list(container_data[Data.mount_key])
+        self.git_repos: list[str] = self.load_list_from_config_yaml(Data.git_key)
+        self.commands: list[str] = self.load_list_from_config_yaml(Data.cmds_key)
+        self.mount_points: list[str] = self.load_dict_from_config_yaml(Data.mount_key)
 
     def __repr__(self):
         return self.name
@@ -68,9 +61,12 @@ class Container(Logger):
         success: bool = True
         _, sls_load_time = self.time_it(self.load_sls_templates)
 
+        self.deactivate()
+        _, mnt_time = self.time_it(self.set_mount_points)
+
+        self.activate()
         _, git_time = self.time_it(self.clone_git_repos)
         _, cmd_time = self.time_it(self.execute_command_list)
-        _, mnt_time = self.time_it(self.set_mount_points)
 
         # TODO other configuration
 
@@ -84,7 +80,7 @@ class Container(Logger):
             self.logger.warning(f'Configuring failed after {cumulative_time} seconds')
         return success
 
-    def activate(self, turn_on: bool) -> bool:
+    def activate(self, turn_on: bool=True) -> bool:
         subcommand: str = 'start' if turn_on else 'stop'
         activate_cmd: str = f'lxc-{subcommand} -n {self.name}'
 
@@ -100,6 +96,9 @@ class Container(Logger):
         self.logger.warning(f'{subcommand.capitalize()}ing failed after {time_taken} seconds')
         return False
 
+    def deactivate(self) -> bool:
+        return self.activate(turn_on=False)
+
     # Helper functions
     def load_sls_templates(self):
         self.sls_templates_path: Path = Paths.containerization / self.sls_template_dir
@@ -110,6 +109,18 @@ class Container(Logger):
         for file_path in self.sls_templates_path.glob('*'):
             if file_path.suffix == Paths.sls_template_suffix:
                 self.sls_templates[file_path.stem] = self.sls_template_env.get_template(file_path.name)
+
+    def load_list_from_config_yaml(self, yaml_key:str):
+        output = []
+        if yaml_key in self.container_data and self.container_data[yaml_key]:
+            output = list(self.container_data[yaml_key])
+        return output
+
+    def load_dict_from_config_yaml(self, yaml_key:str):
+        output = {}
+        if yaml_key in self.container_data and self.container_data[yaml_key]:
+            output = dict(self.container_data[yaml_key])
+        return output
 
     def clone_git_repos(self):
         git_directory: Path = self.user_home / 'git'
@@ -133,13 +144,26 @@ class Container(Logger):
         # each mount point needs added at
         # /var/lib/lxc/<container>/config with:
         # lxc.mount.entry = /root/.ssh srv/.ssh none bind 0 0
+
         mount_note: list[str] = ["",
                                  "# Additional mount points"
-                                ]
+                                ] + [f"lxc.mount.entry = {host_location} {container_args}"
+                                     for host_location, container_args in self.mount_points.items()]
 
-        for line in mount_note + self.mount_points:
-            command: list[str] = ["echo", line, ">>", f"{self.config}"]
-            subprocess.run(command)
+        # Idempotency check
+        try:
+            for mount_entry in mount_note[1:]:
+                output = subprocess.check_output(["grep", mount_entry, self.config) # type12:  ignore
+            self.logger.info("Mount points previously set")
+            return
+        except subprocess.CalledProcessError as e:
+            # encountered if grep does not find any mount_entry
+            pass
+
+        for line in mount_note:
+            config_line: str = subprocess.Popen(["echo", line], stdout=subprocess.PIPE)
+            output = subprocess.check_output(["sudo", "tee", "-a", self.config], stdin=config_line.stdout)  # type: ignore
+            config_line.wait()
 
     # TODO function to place (completed) templates
 
