@@ -99,7 +99,7 @@ class Container(Logger):
     def deactivate(self) -> bool:
         return self.activate(turn_on=False)
 
-    # Helper functions
+    # Helper functions - Timed with time_it
     def load_sls_templates(self):
         self.sls_templates_path: Path = Paths.containerization / self.sls_template_dir
         self.sls_template_env = Environment(loader=FileSystemLoader(self.sls_templates_path))
@@ -109,18 +109,6 @@ class Container(Logger):
         for file_path in self.sls_templates_path.glob('*'):
             if file_path.suffix == Paths.sls_template_suffix:
                 self.sls_templates[file_path.stem] = self.sls_template_env.get_template(file_path.name)
-
-    def load_list_from_config_yaml(self, yaml_key:str):
-        output = []
-        if yaml_key in self.container_data and self.container_data[yaml_key]:
-            output = list(self.container_data[yaml_key])
-        return output
-
-    def load_dict_from_config_yaml(self, yaml_key:str):
-        output = {}
-        if yaml_key in self.container_data and self.container_data[yaml_key]:
-            output = dict(self.container_data[yaml_key])
-        return output
 
     def clone_git_repos(self):
         git_directory: Path = self.user_home / 'git'
@@ -144,6 +132,14 @@ class Container(Logger):
         # each mount point needs added at
         # /var/lib/lxc/<container>/config with:
         # lxc.mount.entry = /root/.ssh srv/.ssh none bind 0 0
+        
+        for host_location, container_args in self.mount_points.items():
+            if not Path(host_location).exists():
+                self.logging.error(f"{host_location} does not exist on {self.host}")
+                return
+            container_mount_point: Path = self.root / container_args.split(" ")[0]
+            if not container_mount_point.exists():
+                container_mount_point.mkdir(parents=True, exist_ok=True)
 
         mount_note: list[str] = ["",
                                  "# Additional mount points"
@@ -172,6 +168,19 @@ class Container(Logger):
         # create pillar/salt data
         pass
 
+    # Helper functions - Untimed
+    def load_list_from_config_yaml(self, yaml_key:str):
+        output = []
+        if yaml_key in self.container_data and self.container_data[yaml_key]:
+            output = list(self.container_data[yaml_key])
+        return output
+
+    def load_dict_from_config_yaml(self, yaml_key:str):
+        output = {}
+        if yaml_key in self.container_data and self.container_data[yaml_key]:
+            output = dict(self.container_data[yaml_key])
+        return output
+
     # Properties
     @property
     def host(self) -> str:
@@ -193,6 +202,7 @@ class Container(Logger):
     def home(self) -> Path:
         return self.root / 'home'
 
+    # Process timing
     @staticmethod
     def time_it(func, *args, **kwargs):
         t_start: float = perf_counter()
