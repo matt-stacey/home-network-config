@@ -1,32 +1,30 @@
 test_cont1:
     git_urls:
-        - git@github.com:matt-stacey/home_salt.git
+        - https://github.com/matt-stacey/home-network-config.git
     commands:
         - echo test_cont1 command
         - ls -l ~/git
         - ip a
     mount:
-        /root/Git/salt/salt: srv/salt none bind 0 0
-        /root/Git/salt/pillar: srv/pillar none bind 0 0
+        /home/matt/Git/home-network-config: home/ubuntu/mount_test/home-network-config none bind 0 0
 
 test_cont2:
     git_urls:
-        - git@github.com:matt-stacey/home_salt.git
+        - https://github.com/matt-stacey/home-network-config.git
     commands:
         - echo test_cont2 command
         - ls -l ~/git
         - ip a
     mount:
-        /root/Git/salt/salt: srv/salt none bind 0 0
-        /root/Git/salt/pillar: srv/pillar none bind 0 0
+        /home/matt/Git/home-network-config: home/ubuntu/mount_test/home-network-config none bind 0 0
 
 test_cont3:
     git_urls:
-        - git@github.com:matt-stacey/home_salt.git
+        - https://github.com/matt-stacey/home-network-config.git
     commands:
         - echo test_cont3 command
         - ls -l ~/git
         - ip a
     mount:
-        /root/Git/salt/salt: srv/salt none bind 0 0
-        /root/Git/salt/pillar: srv/pillar none bind 0 0
+        /home/matt/Git/home-network-config: home/ubuntu/mount_test/home-network-config none bind 0 0
+

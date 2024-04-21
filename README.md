@@ -1,4 +1,4 @@
-# home_salt
+# home-network-config
 Salt and LXC setup for home network
 
 ## LXC Preparation
@@ -54,8 +54,8 @@ https://wiki.archlinux.org/title/Linux_Containers
 
 
 ## Repo / Virtual Environment Preparation
-- HTTPS: git clone --depth 1 https://github.com/matt-stacey/home_salt.git
-- SSH: git clone git@github.com:matt-stacey/home_salt.git
+- HTTPS: git clone --depth 1 https://github.com/matt-stacey/home-network-config.git
+- SSH: git clone git@github.com:matt-stacey/home-network-config.git
 - call `source bashrc` from the command line to prep the virtual environment
 
 
@@ -123,3 +123,4 @@ https://wiki.archlinux.org/title/Linux_Containers
 - `lxc-copy -n original -N new`  # must be stopped
 - `lxc-stop -n my-container`
 - `lxc-destroy -n my-container`
+
