@@ -1,4 +1,3 @@
-import os
 import socket
 import subprocess
 
@@ -32,30 +31,26 @@ class Container(Logger):
         copy_cmd: str = f'lxc-copy -n {source_container} -N {self.name}'
 
         self.logger.info(copy_cmd)
-        output, time_taken = self.time_popen(copy_cmd)  # FIXME os
+        output, time_taken = self.time_run(copy_cmd.split(" "))
 
-        if len(output) == 0:
-            # FIXME very weak way of determining if successful,
-            #       but haven't encountered failing to see what that looks like yet
+        if output.returncode == 0:
             self.logger.info(f'Copied in {time_taken} seconds')
             return True
 
-        self.logger.warning(f'Copying failed after {time_taken} seconds')
+        self.logger.warning(f'Copying failed after {time_taken} seconds with returncode {output.returncode}')
         return False
 
     def remove(self) -> bool:
         remove_cmd: str = f'lxc-destroy -n {self.name}'
 
         self.logger.info(remove_cmd)
-        output, time_taken = self.time_popen(remove_cmd)  # FIXME os
+        output, time_taken = self.time_run(remove_cmd.split(" "))
 
-        if len(output) == 0:
-            # FIXME very weak way of determining if successful,
-            #       but haven't encountered failing to see what that looks like yet
+        if output.returncode == 0:
             self.logger.info(f'Removed in {time_taken} seconds')
             return True
 
-        self.logger.warning(f'Removing failed after {time_taken} seconds')
+        self.logger.warning(f'Removing failed after {time_taken} seconds with returncode {output.returncode}')
         return False
 
     def configure(self) -> bool:
@@ -87,15 +82,13 @@ class Container(Logger):
         activate_cmd: str = f'lxc-{subcommand} -n {self.name}'
 
         self.logger.info(activate_cmd)
-        output, time_taken = self.time_popen(activate_cmd)  # FIXME os
+        output, time_taken = self.time_run(activate_cmd.split(" "))
 
-        if len(output) == 0:
-            # FIXME very weak way of determining if successful,
-            #       but haven't encountered failing to see what that looks like yet
+        if output.returncode == 0:
             self.logger.info(f'{subcommand.capitalize()}ed in {time_taken} seconds')
             return True
 
-        self.logger.warning(f'{subcommand.capitalize()}ing failed after {time_taken} seconds')
+        self.logger.warning(f'{subcommand.capitalize()}ing failed after {time_taken} seconds with returncode {output.returncode}')
         return False
 
     def deactivate(self) -> bool:
@@ -149,7 +142,7 @@ class Container(Logger):
         # Idempotency check
         try:
             for mount_entry in mount_note[1:]:
-                output = subprocess.check_output(["grep", mount_entry, self.config) # type12:  ignore
+                output = subprocess.check_output(["grep", mount_entry, self.config]) # type:  ignore
             self.logger.info("Mount points previously set")
             return
         except subprocess.CalledProcessError as e:
@@ -226,10 +219,11 @@ class Container(Logger):
         return result, time_taken
 
     @staticmethod
-    def time_popen(command):
+    def time_run(command_list):
         t_start: float = perf_counter()
-        result = os.popen(command).read()
+        result = subprocess.run(command_list)
         t_stop: float = perf_counter()
 
         time_taken = t_stop - t_start
         return result, time_taken
+

@@ -1,11 +1,11 @@
-import os
 import socket
+import subprocess
 
 from pathlib import Path
 
 
 class Paths:
-    repo: Path = Path(os.popen('git rev-parse --show-toplevel').read().strip())
+    repo: Path = Path(subprocess.run('git rev-parse --show-toplevel'.split(" "), capture_output=True, text=True).stdout.strip())
     containerization: Path = repo / 'containerization'
     sls_template_dir: str = 'templates/'  # trailing slash for Jinja2
     sls_template_suffix: str = '.template'

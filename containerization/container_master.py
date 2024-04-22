@@ -1,4 +1,4 @@
-import os
+import subprocess
 
 from time import perf_counter
 from typing import List
@@ -29,7 +29,9 @@ class ContainerMaster(Logger):
             self.log_and_raise(f'Source container {source_container} does not exist!')
 
         containers_before_copy: List[str] = list(self.current_containers)
-        os.popen(f'lxc-stop -n {source_container}').read()  # Must be stopped before copying
+        subprocess.run(["lxc-stop",  # Must be stopped before copying
+                        "-n",
+                        source_container])
 
         for new_container in self.managed_containers:
             if new_container.name in containers_before_copy:
@@ -114,7 +116,8 @@ class ContainerMaster(Logger):
     @property
     def current_containers(self) -> List[str]:
         lxc_cmd: str = 'lxc-ls -f'
-        lxc_output = os.popen(lxc_cmd)  # type: ignore
-        lxc_data: List[str] = lxc_output.read().split('\n')[1:]
+        lxc_output: str = subprocess.run(lxc_cmd.split(" "), capture_output=True, text=True).stdout
+        lxc_data: List[str] = lxc_output.split('\n')[1:]
         containers: List[str] = [cont_info.split(' ')[0] for cont_info in lxc_data if len(cont_info) > 0]
         return containers
+
