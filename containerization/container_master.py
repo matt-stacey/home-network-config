@@ -4,8 +4,6 @@ from time import perf_counter
 from typing import List
 from pathlib import Path
 
-from jinja2 import Environment, FileSystemLoader
-
 from logger import Logger
 from yaml_handler import YamlFile
 
