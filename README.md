@@ -64,7 +64,7 @@ https://wiki.archlinux.org/title/Linux_Containers
 - Attach to the container: `lxc-attach -n <privileged-container>`
 - Basic configuration
     - `sudo apt update`
-    - `sudo apt install curl`
+    - `sudo apt install curl git`
 - Configure with the Salt bootstrapper: https://docs.saltproject.io/salt/install-guide/en/latest/topics/bootstrap.html#install-bootstrap
     - `curl -o bootstrap-salt.sh -L https://bootstrap.saltproject.io`
     - `chmod +x bootstrap-salt.sh`

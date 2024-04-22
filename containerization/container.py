@@ -113,22 +113,20 @@ class Container(Logger):
                 self.sls_templates[file_path.stem] = self.sls_template_env.get_template(file_path.name)
 
     def clone_git_repos(self):
-        git_directory: Path = self.user_home / 'git'
-        subprocess.run(['lxc-attach', '-n', self.name, '--', 'mkdir', '~/git'])
+        git_path: Path = Path("/usr/bin/git")
+        git_repo_dir: Path = Path("/root/git")
+        create_git: str = self.attached_command(f"mkdir -p {git_repo_dir}")
+        subprocess.run(create_git.split(" "))
 
         for repo in self.git_repos:
-            clone_cmd: list[str] = ['lxc-attach', '-n', self.name,
-                                    '--',
-                                    'cd', '~/git'
-                                    '&&',
-                                    'git', 'clone', repo]
-            subprocess.run(clone_cmd)
+            repo_name: str = repo.split("/")[-1].split(".")[0]
+            clone_cmd: str = self.attached_command(f"{git_path} clone {repo} {git_repo_dir}/{repo_name}")
+            subprocess.run(clone_cmd.split(" "))
 
     def execute_command_list(self):
         for command in self.commands:
-            cmd_to_run: list[str] = ['lxc-attach', '-n', self.name,
-                                      '--', command]
-            subprocess.run(cmd_to_run)
+            cmd_to_run: str = self.attached_command(command)
+            subprocess.run(cmd_to_run.split(" "))
 
     def set_mount_points(self):
         # each mount point needs added at
@@ -183,6 +181,11 @@ class Container(Logger):
             output = dict(self.container_data[yaml_key])
         return output
 
+    def attached_command(self, command:str) -> str:
+        new_command: str = f"lxc-attach -n {self.name} -- {command}"
+        self.logger.info(new_command)
+        return new_command
+
     # Properties
     @property
     def host(self) -> str:
@@ -199,6 +202,14 @@ class Container(Logger):
     @property
     def root(self) -> Path:
         return self.path / 'rootfs'  # TBD if all containers or just ubuntu
+
+    @property
+    def root_home(self) -> Path:
+        return self.root / "root"
+
+    @property
+    def root_git(self) -> Path:
+        return self.root_home / "git"
 
     @property
     def home(self) -> Path:

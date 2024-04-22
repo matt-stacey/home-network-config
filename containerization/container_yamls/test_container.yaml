@@ -2,9 +2,10 @@ test_cont1:
     git_urls:
         - https://github.com/matt-stacey/home-network-config.git
     commands:
-        - echo test_cont1 command
-        - ls -l ~/git
-        - ip a
+        - /bin/echo test_cont1 command
+        - /bin/ls -l /root/git
+        - sleep 5s
+        - /sbin/ip a
     mount:
         /home/matt/Git/home-network-config: home/ubuntu/mount_test/home-network-config none bind 0 0
 
@@ -12,9 +13,10 @@ test_cont2:
     git_urls:
         - https://github.com/matt-stacey/home-network-config.git
     commands:
-        - echo test_cont2 command
-        - ls -l ~/git
-        - ip a
+        - /bin/echo test_cont2 command
+        - /bin/ls -l /root/git
+        - sleep 5s
+        - /sbin/ip a
     mount:
         /home/matt/Git/home-network-config: home/ubuntu/mount_test/home-network-config none bind 0 0
 
@@ -22,9 +24,10 @@ test_cont3:
     git_urls:
         - https://github.com/matt-stacey/home-network-config.git
     commands:
-        - echo test_cont3 command
-        - ls -l ~/git
-        - ip a
+        - /bin/echo test_cont3 command
+        - /bin/ls -l /root/git
+        - sleep 5s
+        - /sbin/ip a
     mount:
         /home/matt/Git/home-network-config: home/ubuntu/mount_test/home-network-config none bind 0 0
 
