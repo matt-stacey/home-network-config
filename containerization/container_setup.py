@@ -36,13 +36,14 @@ if __name__ == '__main__':
     parser = make_parser()
     args = parser.parse_args()
 
-    container_master = ContainerMaster(Path(args.yaml))
-
     container_setup = Logger('container_setup')
     logger = container_setup.logger  # janky
     logger.setLevel(logging.DEBUG)
-    logger.info(f'Existing containers: {container_master.current_containers}')
 
+    container_master = ContainerMaster(Path(args.yaml))
+    logger.info(f'Existing containers: {container_master.current_containers}')
+    if len(container_master.managed_containers) < 1:
+        logger.log_and_raise(f"No containers to manage! {container_master.managed_containers}")
     if args.copy:
         logger.info(f'Copying containers from {args.source_container}')
         logger.debug(container_master.managed_containers)
