@@ -80,7 +80,7 @@ class ContainerMaster(Logger):
             if local:
                 configured = container.configure_local()
             else:
-                configured = contaimer.configure_connected()
+                configured = container.configure_connected()
 
             if configured:
                 configured_containers.append(container.name)
