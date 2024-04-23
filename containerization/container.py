@@ -43,6 +43,7 @@ class Container(Logger):
     def remove(self) -> bool:
         remove_cmd: str = f'lxc-destroy -n {self.name}'
 
+        self.deactivate()
         self.logger.info(remove_cmd)
         output, time_taken = self.time_run(remove_cmd.split(" "))
 
