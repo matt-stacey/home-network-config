@@ -15,7 +15,8 @@ def make_parser():
     mode_group = parser.add_mutually_exclusive_group()
     mode_group.add_argument('--copy', action='store_true', dest='copy', default=False)
     mode_group.add_argument('--destroy', action='store_true', dest='destroy', default=False)
-    mode_group.add_argument('--configure', action='store_true', dest='configure', default=False)
+    mode_group.add_argument('--configure-local', action='store_true', dest='configure_local', default=False)
+    mode_group.add_argument('--configure-connected', action='store_true', dest='configure_connected', default=False)
     mode_group.add_argument('--activate', action='store_true', dest='activate', default=False)
     mode_group.add_argument('--deactivate', action='store_true', dest='deactivate', default=False)
     mode_group.add_argument('--start-salt', action='store_true', dest='start_salt', default=False)
@@ -44,6 +45,7 @@ if __name__ == '__main__':
     logger.info(f'Existing containers: {container_master.current_containers}')
     if len(container_master.managed_containers) < 1:
         logger.log_and_raise(f"No containers to manage! {container_master.managed_containers}")
+
     if args.copy:
         logger.info(f'Copying containers from {args.source_container}')
         logger.debug(container_master.managed_containers)
@@ -55,11 +57,17 @@ if __name__ == '__main__':
         destroyed = container_master.destroy()
         logger.info(f'Destroyed containers: {destroyed}')
 
-    elif args.configure:
-        logger.info('Configuring containers')
-        logger.debug(container_master.sls_templates.keys())
-        configured = container_master.configure()
-        logger.info(f'Configured containers: {configured}')
+    elif args.configure_local:
+        logger.info('Configuring containers with local data')
+        configured = container_master.configure(local=True)
+        logger.info(f'Configured (local) containers: {configured}')
+        logger.info('Activate containters with --activate and ensure they have IP addresses before continuing')
+
+    elif args.configure_connected:
+        logger.info('Configuring containers with non-local data')
+        configured = container_master.configure(local=False)
+        logger.info(f'Configured (non-local) containers: {configured}')
+        logger.info('Activate containters with --activate and ensure they have IP addresses before continuing')
 
     elif args.activate:
         logger.info('Activating containers')

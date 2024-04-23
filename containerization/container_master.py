@@ -63,7 +63,7 @@ class ContainerMaster(Logger):
 
         return sorted(destroyed_containers)
 
-    def configure(self) -> List[str]:
+    def configure(self, local=True) -> List[str]:
         """
         Configure our containers
         params: none
@@ -76,7 +76,13 @@ class ContainerMaster(Logger):
                 self.logger.warning(f'Directed to configure {container}, but it couldn\'t be found!')
                 continue
 
-            if container.configure():
+            configured: bool = False
+            if local:
+                configured = container.configure_local()
+            else:
+                configured = contaimer.configure_connected()
+
+            if configured:
                 configured_containers.append(container.name)
 
         return sorted(configured_containers)

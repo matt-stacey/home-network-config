@@ -20,8 +20,8 @@ class Container(Logger):
         self.container_data = container_data  # type: ignore
 
         self.git_repos: list[str] = self.load_list_from_config_yaml(Data.git_key)
-        self.commands: list[str] = self.load_list_from_config_yaml(Data.cmds_key)
-        self.mount_points: list[str] = self.load_dict_from_config_yaml(Data.mount_key)
+        self.commands: dict[str, list[str]] = self.load_dict_from_config_yaml(Data.cmds_key)
+        self.mount_points: dict[str, str] = self.load_dict_from_config_yaml(Data.mount_key)
 
     def __repr__(self):
         return self.name
@@ -53,28 +53,52 @@ class Container(Logger):
         self.logger.warning(f'Removing failed after {time_taken} seconds with returncode {output.returncode}')
         return False
 
-    def configure(self) -> bool:
-        self.logger.info('Configuring')
+    def configure_local(self) -> bool:
+        self.logger.info('Beginning local configuration')
         success: bool = True
-        _, sls_load_time = self.time_it(self.load_sls_templates)
+        output, sls_load_time = self.time_it(self.load_sls_templates)
+        success = success and (output.returncode == 0)
 
         self.deactivate()
-        _, mnt_time = self.time_it(self.set_mount_points)
+        output, mnt_time = self.time_it(self.set_mount_points)
+        success = success and (output.returncode == 0)
 
         self.activate()
-        _, git_time = self.time_it(self.clone_git_repos)
-        _, cmd_time = self.time_it(self.execute_command_list)
+        output, cmd_time = self.time_it(self.execute_command_list, local=True)
+        success = success and (output.returncode == 0)
 
         # TODO other configuration
 
         cumulative_time = sls_load_time + \
-                          git_time + \
-                          cmd_time + \
-                          mnt_time
+                          mnt_time + \
+                          cmd_time
+
         if success:
-            self.logger.info(f'Configured in {cumulative_time} seconds')
+            self.logger.info(f'Configured (local) in {cumulative_time} seconds')
         else:
-            self.logger.warning(f'Configuring failed after {cumulative_time} seconds')
+            self.logger.warning(f'Configuring (local) failed after {cumulative_time} seconds')
+        return success
+
+    def configure_connected(self) -> bool:
+        self.logger.info('Beginning networked configuration')
+        success: bool = True
+
+        self.activate()
+        output, git_time = self.time_it(self.clone_git_repos)
+        success = success and (output.returncode == 0)
+
+        output, cmd_time = self.time_it(self.execute_command_list, local=False)
+        success = success and (output.returncode == 0)
+
+        # TODO other configuration
+
+        cumulative_time = git_time + \
+                          cmd_time
+
+        if success:
+            self.logger.info(f'Configured (connected) in {cumulative_time} seconds')
+        else:
+            self.logger.warning(f'Configuring (connected) failed after {cumulative_time} seconds')
         return success
 
     def activate(self, turn_on: bool=True) -> bool:
@@ -116,8 +140,9 @@ class Container(Logger):
             clone_cmd: str = self.attached_command(f"{git_path} clone {repo} {git_repo_dir}/{repo_name}")
             subprocess.run(clone_cmd.split(" "))
 
-    def execute_command_list(self):
-        for command in self.commands:
+    def execute_command_list(self, local: bool=True):
+        commands_key: str = "local" if local else "connected"
+        for command in self.commands[commands_key]:
             cmd_to_run: str = self.attached_command(command)
             subprocess.run(cmd_to_run.split(" "))
 
