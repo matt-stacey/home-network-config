@@ -57,16 +57,13 @@ class Container(Logger):
     def configure_local(self) -> bool:
         self.logger.info('Beginning local configuration')
         success: bool = True
-        output, sls_load_time = self.time_it(self.load_sls_templates)
-        success = success and (output.returncode == 0)
+        _, sls_load_time = self.time_it(self.load_sls_templates)
 
         self.deactivate()
-        output, mnt_time = self.time_it(self.set_mount_points)
-        success = success and (output.returncode == 0)
+        _, mnt_time = self.time_it(self.set_mount_points)
 
         self.activate()
-        output, cmd_time = self.time_it(self.execute_command_list, local=True)
-        success = success and (output.returncode == 0)
+        _, cmd_time = self.time_it(self.execute_command_list, local=True)
 
         # TODO other configuration
 
@@ -85,11 +82,9 @@ class Container(Logger):
         success: bool = True
 
         self.activate()
-        output, git_time = self.time_it(self.clone_git_repos)
-        success = success and (output.returncode == 0)
+        _, git_time = self.time_it(self.clone_git_repos)
 
-        output, cmd_time = self.time_it(self.execute_command_list, local=False)
-        success = success and (output.returncode == 0)
+        _, cmd_time = self.time_it(self.execute_command_list, local=False)
 
         # TODO other configuration
 
