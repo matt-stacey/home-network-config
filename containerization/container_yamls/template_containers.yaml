@@ -1,0 +1,71 @@
+template_ansible_control:
+    mount: null
+    git_urls:
+        - https://github.com/matt-stacey/home-network-config.git
+        - https://github.com/ansible/ansible.git
+    commands:
+        local:
+            - /usr/bin/mkdir -p /root/git
+        connected:
+            - /usr/bin/apt update
+            - /usr/bin/apt upgrade -y
+            - /usr/bin/apt install git python3.11
+            # https://ansible.readthedocs.io/projects/ansible-core/en/stable-2.16/installation_guide/installation_distros.html#installing-ansible-on-ubuntu
+            - /usr/bin/apt install software-properties-common
+            - add-apt-repository --yes --update ppa:ansible/ansible
+            - /usr/bin/apt install ansible
+            - /sbin/ip a
+            - /bin/ls -l /root/git
+
+template_ansible_managed:
+    mount: null
+    git_urls:
+        - https://github.com/matt-stacey/home-network-config.git
+    commands:
+        local:
+            - /usr/bin/mkdir -p /root/git
+        connected:
+            - /usr/bin/apt update
+            - /usr/bin/apt upgrade -y
+            - /usr/bin/apt install git python3.11
+            - /sbin/ip a
+            - /bin/ls -l /root/git
+
+template_salt_master:
+    mount: null
+    git_urls:
+        - https://github.com/matt-stacey/home-network-config.git
+        - https://github.com/saltstack/salt.git
+    commands:
+        local:
+            - /usr/bin/mkdir -p /root/git
+        connected:
+            - /usr/bin/apt update
+            - /usr/bin/apt upgrade -y
+            - /usr/bin/apt install git python3.11 curl
+            # https://docs.saltproject.io/salt/install-guide/en/latest/topics/bootstrap.html#install-bootstrap
+            - /usr/bin/curl -o /root/bootstrap-salt.sh -L https://bootstrap.saltproject.io
+            - /usr/bin/chmod +x /root/bootstrap-salt.sh
+            - echo Cannot run the bootstrap until we know the master's IP
+            - echo /root/bootstrap-salt.sh -M -P -A <master IP>
+            - /sbin/ip a
+            - /bin/ls -l /root/git
+
+template_salt_minion:
+    mount: null
+    git_urls:
+        - https://github.com/matt-stacey/home-network-config.git
+    commands:
+        local:
+            - /usr/bin/mkdir -p /root/git
+        connected:
+            - /usr/bin/apt update
+            - /usr/bin/apt upgrade -y
+            - /usr/bin/apt install git python3.11 curl
+            # https://docs.saltproject.io/salt/install-guide/en/latest/topics/bootstrap.html#install-bootstrap
+            - /usr/bin/curl -o /root/bootstrap-salt.sh -L https://bootstrap.saltproject.io
+            - /usr/bin/chmod +x /root/bootstrap-salt.sh
+            - echo Cannot run the bootstrap until we know the master's IP
+            - echo /root/bootstrap-salt.sh -P -A <master IP>
+            - /sbin/ip a
+            - /bin/ls -l /root/git
