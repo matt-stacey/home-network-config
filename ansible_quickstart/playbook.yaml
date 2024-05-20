@@ -1,0 +1,54 @@
+---
+- name: Install Apache webserver
+  hosts: webserver
+  become: yes
+  tasks:
+    - name: Install Apache
+      apt:
+        name: apache2
+        state: present
+
+    - name: Start Apache
+      service:
+        name: apache2
+        state: started
+        enabled: true
+
+- name: Basic container setup
+  hosts: container
+  become: yes
+  tasks:
+    - name: Install byobu
+      apt:
+        name: byobu
+        state: present
+
+    - name: Install vim
+      apt:
+        name: vim
+        state: present
+
+    - name: Install Python
+      apt:
+        name: python3.10
+        state: present
+
+    - name: Install Python Virtual Environment
+      apt:
+        name: python3.10-venv
+        state: present
+
+- name: Git repos
+  hosts: all
+  tasks:
+    - name: Install Git
+      apt:
+        name: git
+        state: present
+
+    - name: Dotfiles
+      git:
+        repo: https://github.com/matt-stacey/dotfiles.git
+        dest: /root/git/dotfiles/
+        clone: yes
+        update: yes
